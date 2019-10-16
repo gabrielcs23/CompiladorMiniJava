@@ -1,6 +1,5 @@
 import ply.lex as lexer
 from pathlib import Path
-import re
 
 LOOKAHEAD = False
 
@@ -84,6 +83,10 @@ def t_COMMENT(t):
     pass
 
 
+def t_newline(t):
+    r'\n'
+    t.lexer.lineno += len(t.value)
+
 def t_WHITESPACE(t):
     r'\s'
     pass
@@ -95,27 +98,41 @@ def t_NUMBER(t):
     return t
 
 def t_ID(t):
-    r'(System\.out\.println)|([a-zA-Z_][a-zA-Z_0-9]*)'
+    r'(System\.out\.println)|([a-zA-Z][a-zA-Z_0-9]*)'
     t.type = reserved.get(t.value, 'ID')  # Check for reserved words
     return t
 
 def t_error(t):
-    t.type = t.value[0]
-    t.value = t.value[0]
+    t.value = (t.value[0], t.lexer.lineno)
     t.lexer.skip(1)
     return t
 
-#entrada = "System.out.println"
 
-#print(re.search(entrada, Path("entrada.txt").read_text()))
+def find_column(input, token):
+    line_start = input.rfind('\n', 0, token.lexpos) + 1
+    return (token.lexpos - line_start) + 1
+
+
+# entrada = "System.out.println"
+# print(re.search(entrada, Path("entrada.txt").read_text()))
 
 entrada = Path("entrada.txt").read_text()
 
 lex = lexer.lex()
 lex.input(entrada)
 
+lexemes = []
+errors = []
 while True:
     token = lex.token()
     if not token:
         break
+    if token.type != "error":
+        lexemes.append(token)
+    else:
+        errors.append(token)
     print(token)
+
+if len(errors) != 0:
+    for error in errors:
+        print("Illegal character '%s' at line %s and column %s" % (error.value[0], error.value[1], find_column(entrada, error)))

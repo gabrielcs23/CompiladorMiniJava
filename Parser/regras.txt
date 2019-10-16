@@ -1,0 +1,55 @@
+PROG -> MAIN CLASSE_R
+CLASSE_R -> CLASSE_R CLASSE | Ɛ
+MAIN -> class id lcurly public static void main lparen String lbrack rbrack id rparen lcurly CMD rcurly rcurly
+CLASSE -> class id EXTENDS_O lcurly VAR_R METODO_R rcurly
+EXTENDS_O -> extends id | Ɛ
+VAR -> TIPO id P_SEMICOLON
+METODO -> public TIPO id lparen PARAMS_O rparen lcurly VAR_R CMD_R return EXP P_SEMICOLON rcurly
+METODO_R -> METODO_R METODO | Ɛ
+VAR_R -> VAR_R VAR | Ɛ
+CMD_R -> CMD_R CMD | Ɛ
+PARAMS -> TIPO id TIPO_R
+TIPO_R -> TIPO_R P_COMMA TIPO ID | Ɛ
+PARAMS_O -> PARAMS | Ɛ
+TIPO ->   int lbrack rbrack
+        | boolean
+        | int
+        | id
+CMD ->    lcurly CMD_R rcurly
+        | if lparen EXP rparen CMD
+        | if lparen EXP rparen CMD else CMD
+        | while lparen EXP rparen CMD
+        | System.out.println lparen EXP rparen P_SEMICOLON
+        | id OP_ATTR EXPP_SEMICOLON
+        | id lbrack EXP rbrack OP_ATTR EXPP_SEMICOLON
+EXP ->    EXP OP_AND REXP
+        | REXP
+REXP ->   REXP OP_LESSER AEXP
+        | REXP OP_EQUAL AEXP
+        | REXP OP_NOT_EQUAL AEXP
+        | AEXP
+AEXP ->   AEXP OP_PLUS MEXP
+        | AEXP OP_MINUS MEXP
+        | AEXP
+MEXP ->   MEXP OP_MULTIPLY SEXP
+        | MEXP OP_DIVISION SEXP
+        | SEXP
+SEXP ->   OP_NOT SEXP
+        | OP_MINUS SEXP
+        | true
+        | false
+        | num
+        | null
+        | new int lbrack EXP rbrack
+        | PEXP P_POINT length
+        | PEXP lbrack EXP rbrack
+        | PEXP
+PEXP ->   id
+        | this
+        | new id lparen rparen
+        | lparen EXP rparen
+        | PEXP P_POINT id
+        | PEXP P_POINT id lparen EXPSO rparen
+EXPS -> EXP EXP_R
+EXP_R -> EXP_R P_COMMA EXP | Ɛ
+EXPSO -> EXPS | Ɛ
