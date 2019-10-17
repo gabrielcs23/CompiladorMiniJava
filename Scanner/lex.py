@@ -131,7 +131,7 @@ while True:
         lexemes.append(token)
     else:
         errors.append(token)
-    print(token)
+    #print(token)
 
 if len(errors) != 0:
     for error in errors:

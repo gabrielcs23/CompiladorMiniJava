@@ -20,8 +20,8 @@ CMD ->    lcurly CMD_R rcurly
         | if lparen EXP rparen CMD else CMD
         | while lparen EXP rparen CMD
         | System.out.println lparen EXP rparen P_SEMICOLON
-        | id OP_ATTR EXPP_SEMICOLON
-        | id lbrack EXP rbrack OP_ATTR EXPP_SEMICOLON
+        | id OP_ATTR EXP P_SEMICOLON
+        | id lbrack EXP rbrack OP_ATTR EXP P_SEMICOLON
 EXP ->    EXP OP_AND REXP
         | REXP
 REXP ->   REXP OP_LESSER AEXP
@@ -30,7 +30,7 @@ REXP ->   REXP OP_LESSER AEXP
         | AEXP
 AEXP ->   AEXP OP_PLUS MEXP
         | AEXP OP_MINUS MEXP
-        | AEXP
+        | MEXP
 MEXP ->   MEXP OP_MULTIPLY SEXP
         | MEXP OP_DIVISION SEXP
         | SEXP
@@ -49,7 +49,7 @@ PEXP ->   id
         | new id lparen rparen
         | lparen EXP rparen
         | PEXP P_POINT id
-        | PEXP P_POINT id lparen EXPSO rparen
+        | PEXP P_POINT id lparen EXPS_O rparen
 EXPS -> EXP EXP_R
 EXP_R -> EXP_R P_COMMA EXP | Ɛ
-EXPSO -> EXPS | Ɛ
+EXPS_O -> EXPS | Ɛ
