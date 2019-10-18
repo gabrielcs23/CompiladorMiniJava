@@ -55,6 +55,16 @@ tokens = [
              "NUMBER"
          ] + list(reserved.values())
 
+precedence = (
+    ('left', "OP_ATTR"),
+    ('left', 'OP_AND'),
+    ('left', 'OP_EQUAL', 'OP_NOT_EQUAL'),
+    ('left', 'OP_GREATER_EQ', 'OP_GREATER', 'OP_LESSER_EQ', 'OP_LESSER'),
+    ('left', 'OP_MINUS', 'OP_PLUS'),
+    ('left', 'OP_MULTIPLY', 'OP_DIVISION'),
+    ('nonassoc', 'OP_NOT')
+)
+
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACK = r'\['
