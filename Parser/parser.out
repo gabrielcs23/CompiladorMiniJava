@@ -27,7 +27,7 @@ Rule 13    var_r -> empty
 Rule 14    cmd_r -> cmd_r cmd
 Rule 15    cmd_r -> empty
 Rule 16    params -> tipo ID tipo_r
-Rule 17    tipo_r -> P_COMMA tipo ID tipo_r
+Rule 17    tipo_r -> tipo_r P_COMMA tipo ID
 Rule 18    tipo_r -> empty
 Rule 19    params_o -> params
 Rule 20    params_o -> empty
@@ -79,7 +79,7 @@ Rule 65    empty -> <empty>
 
 Terminals, with rules where they appear
 
-COMMENT              :
+COMMENT              : 
 ID                   : 4 4 5 6 8 9 16 17 24 30 31 54 56 58 59
 LBRACK               : 4 21 31 50 52
 LCURLY               : 4 4 5 9 25
@@ -89,10 +89,10 @@ OP_AND               : 32
 OP_ATTR              : 30 31
 OP_DIVISION          : 42
 OP_EQUAL             : 35
-OP_GREATER           :
-OP_GREATER_EQ        :
+OP_GREATER           : 
+OP_GREATER_EQ        : 
 OP_LESSER            : 34
-OP_LESSER_EQ         :
+OP_LESSER_EQ         : 
 OP_MINUS             : 39 45
 OP_MULTIPLY          : 41
 OP_NOT               : 44
@@ -124,8 +124,8 @@ RW_THIS              : 55
 RW_TRUE              : 46
 RW_VOID              : 4
 RW_WHILE             : 28
-WHITESPACE           :
-error                :
+WHITESPACE           : 
+error                : 
 
 Nonterminals, with rules where they appear
 
@@ -608,21 +608,21 @@ state 48
 state 49
 
     (16) params -> tipo ID . tipo_r
-    (17) tipo_r -> . P_COMMA tipo ID tipo_r
+    (17) tipo_r -> . tipo_r P_COMMA tipo ID
     (18) tipo_r -> . empty
     (65) empty -> .
 
-    P_COMMA         shift and go to state 53
+    P_COMMA         reduce using rule 65 (empty -> .)
     RPAREN          reduce using rule 65 (empty -> .)
 
     tipo_r                         shift and go to state 52
-    empty                          shift and go to state 54
+    empty                          shift and go to state 53
 
 state 50
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN . LCURLY var_r cmd_r RW_RETURN exp P_SEMICOLON RCURLY
 
-    LCURLY          shift and go to state 55
+    LCURLY          shift and go to state 54
 
 
 state 51
@@ -636,43 +636,32 @@ state 51
     (30) cmd -> . ID OP_ATTR exp P_SEMICOLON
     (31) cmd -> . ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    LCURLY          shift and go to state 57
-    RW_IF           shift and go to state 59
-    RW_WHILE        shift and go to state 60
-    RW_SOUT         shift and go to state 61
-    ID              shift and go to state 56
+    LCURLY          shift and go to state 56
+    RW_IF           shift and go to state 58
+    RW_WHILE        shift and go to state 59
+    RW_SOUT         shift and go to state 60
+    ID              shift and go to state 55
 
-    cmd                            shift and go to state 58
+    cmd                            shift and go to state 57
 
 state 52
 
     (16) params -> tipo ID tipo_r .
+    (17) tipo_r -> tipo_r . P_COMMA tipo ID
 
     RPAREN          reduce using rule 16 (params -> tipo ID tipo_r .)
+    P_COMMA         shift and go to state 61
 
 
 state 53
 
-    (17) tipo_r -> P_COMMA . tipo ID tipo_r
-    (21) tipo -> . RW_INT LBRACK RBRACK
-    (22) tipo -> . RW_BOOLEAN
-    (23) tipo -> . RW_INT
-    (24) tipo -> . ID
-
-    RW_INT          shift and go to state 27
-    RW_BOOLEAN      shift and go to state 28
-    ID              shift and go to state 22
-
-    tipo                           shift and go to state 62
-
-state 54
-
     (18) tipo_r -> empty .
 
+    P_COMMA         reduce using rule 18 (tipo_r -> empty .)
     RPAREN          reduce using rule 18 (tipo_r -> empty .)
 
 
-state 55
+state 54
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY . var_r cmd_r RW_RETURN exp P_SEMICOLON RCURLY
     (12) var_r -> . var_r var
@@ -688,19 +677,19 @@ state 55
     RW_WHILE        reduce using rule 65 (empty -> .)
     RW_SOUT         reduce using rule 65 (empty -> .)
 
-    var_r                          shift and go to state 63
+    var_r                          shift and go to state 62
     empty                          shift and go to state 20
 
-state 56
+state 55
 
     (30) cmd -> ID . OP_ATTR exp P_SEMICOLON
     (31) cmd -> ID . LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    OP_ATTR         shift and go to state 64
-    LBRACK          shift and go to state 65
+    OP_ATTR         shift and go to state 63
+    LBRACK          shift and go to state 64
 
 
-state 57
+state 56
 
     (25) cmd -> LCURLY . cmd_r RCURLY
     (14) cmd_r -> . cmd_r cmd
@@ -714,46 +703,53 @@ state 57
     RW_SOUT         reduce using rule 65 (empty -> .)
     ID              reduce using rule 65 (empty -> .)
 
-    cmd_r                          shift and go to state 66
-    empty                          shift and go to state 67
+    cmd_r                          shift and go to state 65
+    empty                          shift and go to state 66
 
-state 58
+state 57
 
     (4) main -> RW_CLASS ID LCURLY RW_PUBLIC RW_STATIC RW_VOID RW_MAIN LPAREN RW_STRING LBRACK RBRACK ID RPAREN LCURLY cmd . RCURLY RCURLY
 
-    RCURLY          shift and go to state 68
+    RCURLY          shift and go to state 67
+
+
+state 58
+
+    (26) cmd -> RW_IF . LPAREN exp RPAREN cmd
+    (27) cmd -> RW_IF . LPAREN exp RPAREN cmd RW_ELSE cmd
+
+    LPAREN          shift and go to state 68
 
 
 state 59
 
-    (26) cmd -> RW_IF . LPAREN exp RPAREN cmd
-    (27) cmd -> RW_IF . LPAREN exp RPAREN cmd RW_ELSE cmd
+    (28) cmd -> RW_WHILE . LPAREN exp RPAREN cmd
 
     LPAREN          shift and go to state 69
 
 
 state 60
 
-    (28) cmd -> RW_WHILE . LPAREN exp RPAREN cmd
+    (29) cmd -> RW_SOUT . LPAREN exp RPAREN P_SEMICOLON
 
     LPAREN          shift and go to state 70
 
 
 state 61
 
-    (29) cmd -> RW_SOUT . LPAREN exp RPAREN P_SEMICOLON
+    (17) tipo_r -> tipo_r P_COMMA . tipo ID
+    (21) tipo -> . RW_INT LBRACK RBRACK
+    (22) tipo -> . RW_BOOLEAN
+    (23) tipo -> . RW_INT
+    (24) tipo -> . ID
 
-    LPAREN          shift and go to state 71
+    RW_INT          shift and go to state 27
+    RW_BOOLEAN      shift and go to state 28
+    ID              shift and go to state 22
 
+    tipo                           shift and go to state 71
 
 state 62
-
-    (17) tipo_r -> P_COMMA tipo . ID tipo_r
-
-    ID              shift and go to state 72
-
-
-state 63
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r . cmd_r RW_RETURN exp P_SEMICOLON RCURLY
     (12) var_r -> var_r . var
@@ -779,11 +775,11 @@ state 63
   ! ID              [ reduce using rule 65 (empty -> .) ]
 
     tipo                           shift and go to state 26
-    cmd_r                          shift and go to state 73
+    cmd_r                          shift and go to state 72
     var                            shift and go to state 24
-    empty                          shift and go to state 67
+    empty                          shift and go to state 66
 
-state 64
+state 63
 
     (30) cmd -> ID OP_ATTR . exp P_SEMICOLON
     (32) exp -> . exp OP_AND rexp
@@ -815,25 +811,25 @@ state 64
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 75
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 74
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 65
+state 64
 
     (31) cmd -> ID LBRACK . exp RBRACK OP_ATTR exp P_SEMICOLON
     (32) exp -> . exp OP_AND rexp
@@ -865,25 +861,25 @@ state 65
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 90
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 89
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 66
+state 65
 
     (25) cmd -> LCURLY cmd_r . RCURLY
     (14) cmd_r -> cmd_r . cmd
@@ -895,16 +891,16 @@ state 66
     (30) cmd -> . ID OP_ATTR exp P_SEMICOLON
     (31) cmd -> . ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    RCURLY          shift and go to state 91
-    LCURLY          shift and go to state 57
-    RW_IF           shift and go to state 59
-    RW_WHILE        shift and go to state 60
-    RW_SOUT         shift and go to state 61
-    ID              shift and go to state 56
+    RCURLY          shift and go to state 90
+    LCURLY          shift and go to state 56
+    RW_IF           shift and go to state 58
+    RW_WHILE        shift and go to state 59
+    RW_SOUT         shift and go to state 60
+    ID              shift and go to state 55
 
-    cmd                            shift and go to state 92
+    cmd                            shift and go to state 91
 
-state 67
+state 66
 
     (15) cmd_r -> empty .
 
@@ -917,14 +913,14 @@ state 67
     RW_RETURN       reduce using rule 15 (cmd_r -> empty .)
 
 
-state 68
+state 67
 
     (4) main -> RW_CLASS ID LCURLY RW_PUBLIC RW_STATIC RW_VOID RW_MAIN LPAREN RW_STRING LBRACK RBRACK ID RPAREN LCURLY cmd RCURLY . RCURLY
 
-    RCURLY          shift and go to state 93
+    RCURLY          shift and go to state 92
 
 
-state 69
+state 68
 
     (26) cmd -> RW_IF LPAREN . exp RPAREN cmd
     (27) cmd -> RW_IF LPAREN . exp RPAREN cmd RW_ELSE cmd
@@ -957,25 +953,25 @@ state 69
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 94
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 93
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 70
+state 69
 
     (28) cmd -> RW_WHILE LPAREN . exp RPAREN cmd
     (32) exp -> . exp OP_AND rexp
@@ -1007,25 +1003,25 @@ state 70
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 95
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 94
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 71
+state 70
 
     (29) cmd -> RW_SOUT LPAREN . exp RPAREN P_SEMICOLON
     (32) exp -> . exp OP_AND rexp
@@ -1057,38 +1053,32 @@ state 71
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 96
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 95
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
+
+state 71
+
+    (17) tipo_r -> tipo_r P_COMMA tipo . ID
+
+    ID              shift and go to state 96
+
 
 state 72
-
-    (17) tipo_r -> P_COMMA tipo ID . tipo_r
-    (17) tipo_r -> . P_COMMA tipo ID tipo_r
-    (18) tipo_r -> . empty
-    (65) empty -> .
-
-    P_COMMA         shift and go to state 53
-    RPAREN          reduce using rule 65 (empty -> .)
-
-    tipo_r                         shift and go to state 97
-    empty                          shift and go to state 54
-
-state 73
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r . RW_RETURN exp P_SEMICOLON RCURLY
     (14) cmd_r -> cmd_r . cmd
@@ -1100,16 +1090,16 @@ state 73
     (30) cmd -> . ID OP_ATTR exp P_SEMICOLON
     (31) cmd -> . ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    RW_RETURN       shift and go to state 98
-    LCURLY          shift and go to state 57
-    RW_IF           shift and go to state 59
-    RW_WHILE        shift and go to state 60
-    RW_SOUT         shift and go to state 61
-    ID              shift and go to state 56
+    RW_RETURN       shift and go to state 97
+    LCURLY          shift and go to state 56
+    RW_IF           shift and go to state 58
+    RW_WHILE        shift and go to state 59
+    RW_SOUT         shift and go to state 60
+    ID              shift and go to state 55
 
-    cmd                            shift and go to state 92
+    cmd                            shift and go to state 91
 
-state 74
+state 73
 
     (54) pexp -> ID .
 
@@ -1129,16 +1119,16 @@ state 74
     P_COMMA         reduce using rule 54 (pexp -> ID .)
 
 
-state 75
+state 74
 
     (30) cmd -> ID OP_ATTR exp . P_SEMICOLON
     (32) exp -> exp . OP_AND rexp
 
-    P_SEMICOLON     shift and go to state 99
-    OP_AND          shift and go to state 100
+    P_SEMICOLON     shift and go to state 98
+    OP_AND          shift and go to state 99
 
 
-state 76
+state 75
 
     (33) exp -> rexp .
     (34) rexp -> rexp . OP_LESSER aexp
@@ -1150,12 +1140,12 @@ state 76
     RBRACK          reduce using rule 33 (exp -> rexp .)
     RPAREN          reduce using rule 33 (exp -> rexp .)
     P_COMMA         reduce using rule 33 (exp -> rexp .)
-    OP_LESSER       shift and go to state 101
-    OP_EQUAL        shift and go to state 102
-    OP_NOT_EQUAL    shift and go to state 103
+    OP_LESSER       shift and go to state 100
+    OP_EQUAL        shift and go to state 101
+    OP_NOT_EQUAL    shift and go to state 102
 
 
-state 77
+state 76
 
     (37) rexp -> aexp .
     (38) aexp -> aexp . OP_PLUS mexp
@@ -1169,11 +1159,11 @@ state 77
     RBRACK          reduce using rule 37 (rexp -> aexp .)
     RPAREN          reduce using rule 37 (rexp -> aexp .)
     P_COMMA         reduce using rule 37 (rexp -> aexp .)
-    OP_PLUS         shift and go to state 104
-    OP_MINUS        shift and go to state 105
+    OP_PLUS         shift and go to state 103
+    OP_MINUS        shift and go to state 104
 
 
-state 78
+state 77
 
     (40) aexp -> mexp .
     (41) mexp -> mexp . OP_MULTIPLY sexp
@@ -1189,11 +1179,11 @@ state 78
     RBRACK          reduce using rule 40 (aexp -> mexp .)
     RPAREN          reduce using rule 40 (aexp -> mexp .)
     P_COMMA         reduce using rule 40 (aexp -> mexp .)
-    OP_MULTIPLY     shift and go to state 106
-    OP_DIVISION     shift and go to state 107
+    OP_MULTIPLY     shift and go to state 105
+    OP_DIVISION     shift and go to state 106
 
 
-state 79
+state 78
 
     (45) sexp -> OP_MINUS . sexp
     (44) sexp -> . OP_NOT sexp
@@ -1213,21 +1203,21 @@ state 79
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    sexp                           shift and go to state 108
-    pexp                           shift and go to state 87
+    sexp                           shift and go to state 107
+    pexp                           shift and go to state 86
 
-state 80
+state 79
 
     (43) mexp -> sexp .
 
@@ -1245,7 +1235,7 @@ state 80
     P_COMMA         reduce using rule 43 (mexp -> sexp .)
 
 
-state 81
+state 80
 
     (44) sexp -> OP_NOT . sexp
     (44) sexp -> . OP_NOT sexp
@@ -1265,21 +1255,21 @@ state 81
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    sexp                           shift and go to state 109
-    pexp                           shift and go to state 87
+    sexp                           shift and go to state 108
+    pexp                           shift and go to state 86
 
-state 82
+state 81
 
     (46) sexp -> RW_TRUE .
 
@@ -1297,7 +1287,7 @@ state 82
     P_COMMA         reduce using rule 46 (sexp -> RW_TRUE .)
 
 
-state 83
+state 82
 
     (47) sexp -> RW_FALSE .
 
@@ -1315,7 +1305,7 @@ state 83
     P_COMMA         reduce using rule 47 (sexp -> RW_FALSE .)
 
 
-state 84
+state 83
 
     (48) sexp -> RW_NULL .
 
@@ -1333,7 +1323,7 @@ state 84
     P_COMMA         reduce using rule 48 (sexp -> RW_NULL .)
 
 
-state 85
+state 84
 
     (49) sexp -> NUMBER .
 
@@ -1351,16 +1341,16 @@ state 85
     P_COMMA         reduce using rule 49 (sexp -> NUMBER .)
 
 
-state 86
+state 85
 
     (50) sexp -> RW_NEW . RW_INT LBRACK exp RBRACK
     (56) pexp -> RW_NEW . ID LPAREN RPAREN
 
-    RW_INT          shift and go to state 110
-    ID              shift and go to state 111
+    RW_INT          shift and go to state 109
+    ID              shift and go to state 110
 
 
-state 87
+state 86
 
     (51) sexp -> pexp . P_POINT RW_LENGTH
     (52) sexp -> pexp . LBRACK exp RBRACK
@@ -1368,8 +1358,8 @@ state 87
     (58) pexp -> pexp . P_POINT ID
     (59) pexp -> pexp . P_POINT ID LPAREN exps_o RPAREN
 
-    P_POINT         shift and go to state 112
-    LBRACK          shift and go to state 113
+    P_POINT         shift and go to state 111
+    LBRACK          shift and go to state 112
     OP_MULTIPLY     reduce using rule 53 (sexp -> pexp .)
     OP_DIVISION     reduce using rule 53 (sexp -> pexp .)
     OP_PLUS         reduce using rule 53 (sexp -> pexp .)
@@ -1384,7 +1374,7 @@ state 87
     P_COMMA         reduce using rule 53 (sexp -> pexp .)
 
 
-state 88
+state 87
 
     (55) pexp -> RW_THIS .
 
@@ -1404,7 +1394,7 @@ state 88
     P_COMMA         reduce using rule 55 (pexp -> RW_THIS .)
 
 
-state 89
+state 88
 
     (57) pexp -> LPAREN . exp RPAREN
     (32) exp -> . exp OP_AND rexp
@@ -1436,34 +1426,34 @@ state 89
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 114
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 113
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 90
+state 89
 
     (31) cmd -> ID LBRACK exp . RBRACK OP_ATTR exp P_SEMICOLON
     (32) exp -> exp . OP_AND rexp
 
-    RBRACK          shift and go to state 115
-    OP_AND          shift and go to state 100
+    RBRACK          shift and go to state 114
+    OP_AND          shift and go to state 99
 
 
-state 91
+state 90
 
     (25) cmd -> LCURLY cmd_r RCURLY .
 
@@ -1477,7 +1467,7 @@ state 91
     RW_ELSE         reduce using rule 25 (cmd -> LCURLY cmd_r RCURLY .)
 
 
-state 92
+state 91
 
     (14) cmd_r -> cmd_r cmd .
 
@@ -1490,7 +1480,7 @@ state 92
     RW_RETURN       reduce using rule 14 (cmd_r -> cmd_r cmd .)
 
 
-state 93
+state 92
 
     (4) main -> RW_CLASS ID LCURLY RW_PUBLIC RW_STATIC RW_VOID RW_MAIN LPAREN RW_STRING LBRACK RBRACK ID RPAREN LCURLY cmd RCURLY RCURLY .
 
@@ -1498,42 +1488,43 @@ state 93
     $end            reduce using rule 4 (main -> RW_CLASS ID LCURLY RW_PUBLIC RW_STATIC RW_VOID RW_MAIN LPAREN RW_STRING LBRACK RBRACK ID RPAREN LCURLY cmd RCURLY RCURLY .)
 
 
-state 94
+state 93
 
     (26) cmd -> RW_IF LPAREN exp . RPAREN cmd
     (27) cmd -> RW_IF LPAREN exp . RPAREN cmd RW_ELSE cmd
     (32) exp -> exp . OP_AND rexp
 
-    RPAREN          shift and go to state 116
-    OP_AND          shift and go to state 100
+    RPAREN          shift and go to state 115
+    OP_AND          shift and go to state 99
 
 
-state 95
+state 94
 
     (28) cmd -> RW_WHILE LPAREN exp . RPAREN cmd
     (32) exp -> exp . OP_AND rexp
 
-    RPAREN          shift and go to state 117
-    OP_AND          shift and go to state 100
+    RPAREN          shift and go to state 116
+    OP_AND          shift and go to state 99
 
 
-state 96
+state 95
 
     (29) cmd -> RW_SOUT LPAREN exp . RPAREN P_SEMICOLON
     (32) exp -> exp . OP_AND rexp
 
-    RPAREN          shift and go to state 118
-    OP_AND          shift and go to state 100
+    RPAREN          shift and go to state 117
+    OP_AND          shift and go to state 99
+
+
+state 96
+
+    (17) tipo_r -> tipo_r P_COMMA tipo ID .
+
+    P_COMMA         reduce using rule 17 (tipo_r -> tipo_r P_COMMA tipo ID .)
+    RPAREN          reduce using rule 17 (tipo_r -> tipo_r P_COMMA tipo ID .)
 
 
 state 97
-
-    (17) tipo_r -> P_COMMA tipo ID tipo_r .
-
-    RPAREN          reduce using rule 17 (tipo_r -> P_COMMA tipo ID tipo_r .)
-
-
-state 98
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r RW_RETURN . exp P_SEMICOLON RCURLY
     (32) exp -> . exp OP_AND rexp
@@ -1565,25 +1556,25 @@ state 98
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 119
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 118
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 99
+state 98
 
     (30) cmd -> ID OP_ATTR exp P_SEMICOLON .
 
@@ -1597,7 +1588,7 @@ state 99
     RW_ELSE         reduce using rule 30 (cmd -> ID OP_ATTR exp P_SEMICOLON .)
 
 
-state 100
+state 99
 
     (32) exp -> exp OP_AND . rexp
     (34) rexp -> . rexp OP_LESSER aexp
@@ -1627,24 +1618,24 @@ state 100
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    rexp                           shift and go to state 120
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    rexp                           shift and go to state 119
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 101
+state 100
 
     (34) rexp -> rexp OP_LESSER . aexp
     (38) aexp -> . aexp OP_PLUS mexp
@@ -1670,23 +1661,23 @@ state 101
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    aexp                           shift and go to state 121
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    aexp                           shift and go to state 120
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 102
+state 101
 
     (35) rexp -> rexp OP_EQUAL . aexp
     (38) aexp -> . aexp OP_PLUS mexp
@@ -1712,23 +1703,23 @@ state 102
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    aexp                           shift and go to state 122
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    aexp                           shift and go to state 121
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 103
+state 102
 
     (36) rexp -> rexp OP_NOT_EQUAL . aexp
     (38) aexp -> . aexp OP_PLUS mexp
@@ -1754,23 +1745,23 @@ state 103
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    aexp                           shift and go to state 123
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    aexp                           shift and go to state 122
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 104
+state 103
 
     (38) aexp -> aexp OP_PLUS . mexp
     (41) mexp -> . mexp OP_MULTIPLY sexp
@@ -1793,22 +1784,22 @@ state 104
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    mexp                           shift and go to state 124
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    mexp                           shift and go to state 123
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 105
+state 104
 
     (39) aexp -> aexp OP_MINUS . mexp
     (41) mexp -> . mexp OP_MULTIPLY sexp
@@ -1831,22 +1822,22 @@ state 105
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    mexp                           shift and go to state 125
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    mexp                           shift and go to state 124
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 106
+state 105
 
     (41) mexp -> mexp OP_MULTIPLY . sexp
     (44) sexp -> . OP_NOT sexp
@@ -1866,21 +1857,21 @@ state 106
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    sexp                           shift and go to state 126
-    pexp                           shift and go to state 87
+    sexp                           shift and go to state 125
+    pexp                           shift and go to state 86
 
-state 107
+state 106
 
     (42) mexp -> mexp OP_DIVISION . sexp
     (44) sexp -> . OP_NOT sexp
@@ -1900,21 +1891,21 @@ state 107
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    sexp                           shift and go to state 127
-    pexp                           shift and go to state 87
+    sexp                           shift and go to state 126
+    pexp                           shift and go to state 86
 
-state 108
+state 107
 
     (45) sexp -> OP_MINUS sexp .
 
@@ -1932,7 +1923,7 @@ state 108
     P_COMMA         reduce using rule 45 (sexp -> OP_MINUS sexp .)
 
 
-state 109
+state 108
 
     (44) sexp -> OP_NOT sexp .
 
@@ -1950,31 +1941,31 @@ state 109
     P_COMMA         reduce using rule 44 (sexp -> OP_NOT sexp .)
 
 
-state 110
+state 109
 
     (50) sexp -> RW_NEW RW_INT . LBRACK exp RBRACK
 
-    LBRACK          shift and go to state 128
+    LBRACK          shift and go to state 127
 
 
-state 111
+state 110
 
     (56) pexp -> RW_NEW ID . LPAREN RPAREN
 
-    LPAREN          shift and go to state 129
+    LPAREN          shift and go to state 128
 
 
-state 112
+state 111
 
     (51) sexp -> pexp P_POINT . RW_LENGTH
     (58) pexp -> pexp P_POINT . ID
     (59) pexp -> pexp P_POINT . ID LPAREN exps_o RPAREN
 
-    RW_LENGTH       shift and go to state 130
-    ID              shift and go to state 131
+    RW_LENGTH       shift and go to state 129
+    ID              shift and go to state 130
 
 
-state 113
+state 112
 
     (52) sexp -> pexp LBRACK . exp RBRACK
     (32) exp -> . exp OP_AND rexp
@@ -2006,41 +1997,41 @@ state 113
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    pexp                           shift and go to state 87
-    exp                            shift and go to state 132
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
+    pexp                           shift and go to state 86
+    exp                            shift and go to state 131
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
 
-state 114
+state 113
 
     (57) pexp -> LPAREN exp . RPAREN
     (32) exp -> exp . OP_AND rexp
 
-    RPAREN          shift and go to state 133
-    OP_AND          shift and go to state 100
+    RPAREN          shift and go to state 132
+    OP_AND          shift and go to state 99
 
 
-state 115
+state 114
 
     (31) cmd -> ID LBRACK exp RBRACK . OP_ATTR exp P_SEMICOLON
 
-    OP_ATTR         shift and go to state 134
+    OP_ATTR         shift and go to state 133
 
 
-state 116
+state 115
 
     (26) cmd -> RW_IF LPAREN exp RPAREN . cmd
     (27) cmd -> RW_IF LPAREN exp RPAREN . cmd RW_ELSE cmd
@@ -2052,15 +2043,15 @@ state 116
     (30) cmd -> . ID OP_ATTR exp P_SEMICOLON
     (31) cmd -> . ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    LCURLY          shift and go to state 57
-    RW_IF           shift and go to state 59
-    RW_WHILE        shift and go to state 60
-    RW_SOUT         shift and go to state 61
-    ID              shift and go to state 56
+    LCURLY          shift and go to state 56
+    RW_IF           shift and go to state 58
+    RW_WHILE        shift and go to state 59
+    RW_SOUT         shift and go to state 60
+    ID              shift and go to state 55
 
-    cmd                            shift and go to state 135
+    cmd                            shift and go to state 134
 
-state 117
+state 116
 
     (28) cmd -> RW_WHILE LPAREN exp RPAREN . cmd
     (25) cmd -> . LCURLY cmd_r RCURLY
@@ -2071,31 +2062,31 @@ state 117
     (30) cmd -> . ID OP_ATTR exp P_SEMICOLON
     (31) cmd -> . ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    LCURLY          shift and go to state 57
-    RW_IF           shift and go to state 59
-    RW_WHILE        shift and go to state 60
-    RW_SOUT         shift and go to state 61
-    ID              shift and go to state 56
+    LCURLY          shift and go to state 56
+    RW_IF           shift and go to state 58
+    RW_WHILE        shift and go to state 59
+    RW_SOUT         shift and go to state 60
+    ID              shift and go to state 55
 
-    cmd                            shift and go to state 136
+    cmd                            shift and go to state 135
 
-state 118
+state 117
 
     (29) cmd -> RW_SOUT LPAREN exp RPAREN . P_SEMICOLON
 
-    P_SEMICOLON     shift and go to state 137
+    P_SEMICOLON     shift and go to state 136
 
 
-state 119
+state 118
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r RW_RETURN exp . P_SEMICOLON RCURLY
     (32) exp -> exp . OP_AND rexp
 
-    P_SEMICOLON     shift and go to state 138
-    OP_AND          shift and go to state 100
+    P_SEMICOLON     shift and go to state 137
+    OP_AND          shift and go to state 99
 
 
-state 120
+state 119
 
     (32) exp -> exp OP_AND rexp .
     (34) rexp -> rexp . OP_LESSER aexp
@@ -2107,12 +2098,12 @@ state 120
     RBRACK          reduce using rule 32 (exp -> exp OP_AND rexp .)
     RPAREN          reduce using rule 32 (exp -> exp OP_AND rexp .)
     P_COMMA         reduce using rule 32 (exp -> exp OP_AND rexp .)
-    OP_LESSER       shift and go to state 101
-    OP_EQUAL        shift and go to state 102
-    OP_NOT_EQUAL    shift and go to state 103
+    OP_LESSER       shift and go to state 100
+    OP_EQUAL        shift and go to state 101
+    OP_NOT_EQUAL    shift and go to state 102
 
 
-state 121
+state 120
 
     (34) rexp -> rexp OP_LESSER aexp .
     (38) aexp -> aexp . OP_PLUS mexp
@@ -2126,11 +2117,11 @@ state 121
     RBRACK          reduce using rule 34 (rexp -> rexp OP_LESSER aexp .)
     RPAREN          reduce using rule 34 (rexp -> rexp OP_LESSER aexp .)
     P_COMMA         reduce using rule 34 (rexp -> rexp OP_LESSER aexp .)
-    OP_PLUS         shift and go to state 104
-    OP_MINUS        shift and go to state 105
+    OP_PLUS         shift and go to state 103
+    OP_MINUS        shift and go to state 104
 
 
-state 122
+state 121
 
     (35) rexp -> rexp OP_EQUAL aexp .
     (38) aexp -> aexp . OP_PLUS mexp
@@ -2144,11 +2135,11 @@ state 122
     RBRACK          reduce using rule 35 (rexp -> rexp OP_EQUAL aexp .)
     RPAREN          reduce using rule 35 (rexp -> rexp OP_EQUAL aexp .)
     P_COMMA         reduce using rule 35 (rexp -> rexp OP_EQUAL aexp .)
-    OP_PLUS         shift and go to state 104
-    OP_MINUS        shift and go to state 105
+    OP_PLUS         shift and go to state 103
+    OP_MINUS        shift and go to state 104
 
 
-state 123
+state 122
 
     (36) rexp -> rexp OP_NOT_EQUAL aexp .
     (38) aexp -> aexp . OP_PLUS mexp
@@ -2162,11 +2153,11 @@ state 123
     RBRACK          reduce using rule 36 (rexp -> rexp OP_NOT_EQUAL aexp .)
     RPAREN          reduce using rule 36 (rexp -> rexp OP_NOT_EQUAL aexp .)
     P_COMMA         reduce using rule 36 (rexp -> rexp OP_NOT_EQUAL aexp .)
-    OP_PLUS         shift and go to state 104
-    OP_MINUS        shift and go to state 105
+    OP_PLUS         shift and go to state 103
+    OP_MINUS        shift and go to state 104
 
 
-state 124
+state 123
 
     (38) aexp -> aexp OP_PLUS mexp .
     (41) mexp -> mexp . OP_MULTIPLY sexp
@@ -2182,11 +2173,11 @@ state 124
     RBRACK          reduce using rule 38 (aexp -> aexp OP_PLUS mexp .)
     RPAREN          reduce using rule 38 (aexp -> aexp OP_PLUS mexp .)
     P_COMMA         reduce using rule 38 (aexp -> aexp OP_PLUS mexp .)
-    OP_MULTIPLY     shift and go to state 106
-    OP_DIVISION     shift and go to state 107
+    OP_MULTIPLY     shift and go to state 105
+    OP_DIVISION     shift and go to state 106
 
 
-state 125
+state 124
 
     (39) aexp -> aexp OP_MINUS mexp .
     (41) mexp -> mexp . OP_MULTIPLY sexp
@@ -2202,11 +2193,11 @@ state 125
     RBRACK          reduce using rule 39 (aexp -> aexp OP_MINUS mexp .)
     RPAREN          reduce using rule 39 (aexp -> aexp OP_MINUS mexp .)
     P_COMMA         reduce using rule 39 (aexp -> aexp OP_MINUS mexp .)
-    OP_MULTIPLY     shift and go to state 106
-    OP_DIVISION     shift and go to state 107
+    OP_MULTIPLY     shift and go to state 105
+    OP_DIVISION     shift and go to state 106
 
 
-state 126
+state 125
 
     (41) mexp -> mexp OP_MULTIPLY sexp .
 
@@ -2224,7 +2215,7 @@ state 126
     P_COMMA         reduce using rule 41 (mexp -> mexp OP_MULTIPLY sexp .)
 
 
-state 127
+state 126
 
     (42) mexp -> mexp OP_DIVISION sexp .
 
@@ -2242,7 +2233,7 @@ state 127
     P_COMMA         reduce using rule 42 (mexp -> mexp OP_DIVISION sexp .)
 
 
-state 128
+state 127
 
     (50) sexp -> RW_NEW RW_INT LBRACK . exp RBRACK
     (32) exp -> . exp OP_AND rexp
@@ -2274,32 +2265,32 @@ state 128
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 139
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 138
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 129
+state 128
 
     (56) pexp -> RW_NEW ID LPAREN . RPAREN
 
-    RPAREN          shift and go to state 140
+    RPAREN          shift and go to state 139
 
 
-state 130
+state 129
 
     (51) sexp -> pexp P_POINT RW_LENGTH .
 
@@ -2317,7 +2308,7 @@ state 130
     P_COMMA         reduce using rule 51 (sexp -> pexp P_POINT RW_LENGTH .)
 
 
-state 131
+state 130
 
     (58) pexp -> pexp P_POINT ID .
     (59) pexp -> pexp P_POINT ID . LPAREN exps_o RPAREN
@@ -2336,19 +2327,19 @@ state 131
     RBRACK          reduce using rule 58 (pexp -> pexp P_POINT ID .)
     RPAREN          reduce using rule 58 (pexp -> pexp P_POINT ID .)
     P_COMMA         reduce using rule 58 (pexp -> pexp P_POINT ID .)
-    LPAREN          shift and go to state 141
+    LPAREN          shift and go to state 140
 
 
-state 132
+state 131
 
     (52) sexp -> pexp LBRACK exp . RBRACK
     (32) exp -> exp . OP_AND rexp
 
-    RBRACK          shift and go to state 142
-    OP_AND          shift and go to state 100
+    RBRACK          shift and go to state 141
+    OP_AND          shift and go to state 99
 
 
-state 133
+state 132
 
     (57) pexp -> LPAREN exp RPAREN .
 
@@ -2368,7 +2359,7 @@ state 133
     P_COMMA         reduce using rule 57 (pexp -> LPAREN exp RPAREN .)
 
 
-state 134
+state 133
 
     (31) cmd -> ID LBRACK exp RBRACK OP_ATTR . exp P_SEMICOLON
     (32) exp -> . exp OP_AND rexp
@@ -2400,30 +2391,29 @@ state 134
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 143
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 142
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 135
+state 134
 
     (26) cmd -> RW_IF LPAREN exp RPAREN cmd .
     (27) cmd -> RW_IF LPAREN exp RPAREN cmd . RW_ELSE cmd
 
-  ! shift/reduce conflict for RW_ELSE resolved as shift
     RCURLY          reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .)
     LCURLY          reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .)
     RW_IF           reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .)
@@ -2431,12 +2421,12 @@ state 135
     RW_SOUT         reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .)
     ID              reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .)
     RW_RETURN       reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .)
-    RW_ELSE         shift and go to state 144
+    RW_ELSE         shift and go to state 143
 
   ! RW_ELSE         [ reduce using rule 26 (cmd -> RW_IF LPAREN exp RPAREN cmd .) ]
 
 
-state 136
+state 135
 
     (28) cmd -> RW_WHILE LPAREN exp RPAREN cmd .
 
@@ -2450,7 +2440,7 @@ state 136
     RW_ELSE         reduce using rule 28 (cmd -> RW_WHILE LPAREN exp RPAREN cmd .)
 
 
-state 137
+state 136
 
     (29) cmd -> RW_SOUT LPAREN exp RPAREN P_SEMICOLON .
 
@@ -2464,23 +2454,23 @@ state 137
     RW_ELSE         reduce using rule 29 (cmd -> RW_SOUT LPAREN exp RPAREN P_SEMICOLON .)
 
 
-state 138
+state 137
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r RW_RETURN exp P_SEMICOLON . RCURLY
 
-    RCURLY          shift and go to state 145
+    RCURLY          shift and go to state 144
 
 
-state 139
+state 138
 
     (50) sexp -> RW_NEW RW_INT LBRACK exp . RBRACK
     (32) exp -> exp . OP_AND rexp
 
-    RBRACK          shift and go to state 146
-    OP_AND          shift and go to state 100
+    RBRACK          shift and go to state 145
+    OP_AND          shift and go to state 99
 
 
-state 140
+state 139
 
     (56) pexp -> RW_NEW ID LPAREN RPAREN .
 
@@ -2500,7 +2490,7 @@ state 140
     P_COMMA         reduce using rule 56 (pexp -> RW_NEW ID LPAREN RPAREN .)
 
 
-state 141
+state 140
 
     (59) pexp -> pexp P_POINT ID LPAREN . exps_o RPAREN
     (60) exps_o -> . exps
@@ -2537,28 +2527,28 @@ state 141
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
     RPAREN          reduce using rule 65 (empty -> .)
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    pexp                           shift and go to state 87
-    exps_o                         shift and go to state 147
-    exps                           shift and go to state 148
-    empty                          shift and go to state 149
-    exp                            shift and go to state 150
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
+    pexp                           shift and go to state 86
+    exps_o                         shift and go to state 146
+    exps                           shift and go to state 147
+    empty                          shift and go to state 148
+    exp                            shift and go to state 149
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
 
-state 142
+state 141
 
     (52) sexp -> pexp LBRACK exp RBRACK .
 
@@ -2576,16 +2566,16 @@ state 142
     P_COMMA         reduce using rule 52 (sexp -> pexp LBRACK exp RBRACK .)
 
 
-state 143
+state 142
 
     (31) cmd -> ID LBRACK exp RBRACK OP_ATTR exp . P_SEMICOLON
     (32) exp -> exp . OP_AND rexp
 
-    P_SEMICOLON     shift and go to state 151
-    OP_AND          shift and go to state 100
+    P_SEMICOLON     shift and go to state 150
+    OP_AND          shift and go to state 99
 
 
-state 144
+state 143
 
     (27) cmd -> RW_IF LPAREN exp RPAREN cmd RW_ELSE . cmd
     (25) cmd -> . LCURLY cmd_r RCURLY
@@ -2596,15 +2586,15 @@ state 144
     (30) cmd -> . ID OP_ATTR exp P_SEMICOLON
     (31) cmd -> . ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON
 
-    LCURLY          shift and go to state 57
-    RW_IF           shift and go to state 59
-    RW_WHILE        shift and go to state 60
-    RW_SOUT         shift and go to state 61
-    ID              shift and go to state 56
+    LCURLY          shift and go to state 56
+    RW_IF           shift and go to state 58
+    RW_WHILE        shift and go to state 59
+    RW_SOUT         shift and go to state 60
+    ID              shift and go to state 55
 
-    cmd                            shift and go to state 152
+    cmd                            shift and go to state 151
 
-state 145
+state 144
 
     (9) metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r RW_RETURN exp P_SEMICOLON RCURLY .
 
@@ -2612,7 +2602,7 @@ state 145
     RW_PUBLIC       reduce using rule 9 (metodo -> RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r RW_RETURN exp P_SEMICOLON RCURLY .)
 
 
-state 146
+state 145
 
     (50) sexp -> RW_NEW RW_INT LBRACK exp RBRACK .
 
@@ -2630,28 +2620,28 @@ state 146
     P_COMMA         reduce using rule 50 (sexp -> RW_NEW RW_INT LBRACK exp RBRACK .)
 
 
-state 147
+state 146
 
     (59) pexp -> pexp P_POINT ID LPAREN exps_o . RPAREN
 
-    RPAREN          shift and go to state 153
+    RPAREN          shift and go to state 152
 
 
-state 148
+state 147
 
     (60) exps_o -> exps .
 
     RPAREN          reduce using rule 60 (exps_o -> exps .)
 
 
-state 149
+state 148
 
     (61) exps_o -> empty .
 
     RPAREN          reduce using rule 61 (exps_o -> empty .)
 
 
-state 150
+state 149
 
     (62) exps -> exp . exp_r
     (32) exp -> exp . OP_AND rexp
@@ -2659,14 +2649,14 @@ state 150
     (64) exp_r -> . empty
     (65) empty -> .
 
-    OP_AND          shift and go to state 100
+    OP_AND          shift and go to state 99
     P_COMMA         reduce using rule 65 (empty -> .)
     RPAREN          reduce using rule 65 (empty -> .)
 
-    exp_r                          shift and go to state 154
-    empty                          shift and go to state 155
+    exp_r                          shift and go to state 153
+    empty                          shift and go to state 154
 
-state 151
+state 150
 
     (31) cmd -> ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON .
 
@@ -2680,7 +2670,7 @@ state 151
     RW_ELSE         reduce using rule 31 (cmd -> ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON .)
 
 
-state 152
+state 151
 
     (27) cmd -> RW_IF LPAREN exp RPAREN cmd RW_ELSE cmd .
 
@@ -2694,7 +2684,7 @@ state 152
     RW_ELSE         reduce using rule 27 (cmd -> RW_IF LPAREN exp RPAREN cmd RW_ELSE cmd .)
 
 
-state 153
+state 152
 
     (59) pexp -> pexp P_POINT ID LPAREN exps_o RPAREN .
 
@@ -2714,16 +2704,16 @@ state 153
     P_COMMA         reduce using rule 59 (pexp -> pexp P_POINT ID LPAREN exps_o RPAREN .)
 
 
-state 154
+state 153
 
     (62) exps -> exp exp_r .
     (63) exp_r -> exp_r . P_COMMA exp
 
     RPAREN          reduce using rule 62 (exps -> exp exp_r .)
-    P_COMMA         shift and go to state 156
+    P_COMMA         shift and go to state 155
 
 
-state 155
+state 154
 
     (64) exp_r -> empty .
 
@@ -2731,7 +2721,7 @@ state 155
     RPAREN          reduce using rule 64 (exp_r -> empty .)
 
 
-state 156
+state 155
 
     (63) exp_r -> exp_r P_COMMA . exp
     (32) exp -> . exp OP_AND rexp
@@ -2763,35 +2753,34 @@ state 156
     (58) pexp -> . pexp P_POINT ID
     (59) pexp -> . pexp P_POINT ID LPAREN exps_o RPAREN
 
-    OP_NOT          shift and go to state 81
-    OP_MINUS        shift and go to state 79
-    RW_TRUE         shift and go to state 82
-    RW_FALSE        shift and go to state 83
-    RW_NULL         shift and go to state 84
-    NUMBER          shift and go to state 85
-    RW_NEW          shift and go to state 86
-    ID              shift and go to state 74
-    RW_THIS         shift and go to state 88
-    LPAREN          shift and go to state 89
+    OP_NOT          shift and go to state 80
+    OP_MINUS        shift and go to state 78
+    RW_TRUE         shift and go to state 81
+    RW_FALSE        shift and go to state 82
+    RW_NULL         shift and go to state 83
+    NUMBER          shift and go to state 84
+    RW_NEW          shift and go to state 85
+    ID              shift and go to state 73
+    RW_THIS         shift and go to state 87
+    LPAREN          shift and go to state 88
 
-    exp                            shift and go to state 157
-    rexp                           shift and go to state 76
-    aexp                           shift and go to state 77
-    mexp                           shift and go to state 78
-    sexp                           shift and go to state 80
-    pexp                           shift and go to state 87
+    exp                            shift and go to state 156
+    rexp                           shift and go to state 75
+    aexp                           shift and go to state 76
+    mexp                           shift and go to state 77
+    sexp                           shift and go to state 79
+    pexp                           shift and go to state 86
 
-state 157
+state 156
 
     (63) exp_r -> exp_r P_COMMA exp .
     (32) exp -> exp . OP_AND rexp
 
     P_COMMA         reduce using rule 63 (exp_r -> exp_r P_COMMA exp .)
     RPAREN          reduce using rule 63 (exp_r -> exp_r P_COMMA exp .)
-    OP_AND          shift and go to state 100
+    OP_AND          shift and go to state 99
 
-WARNING:
+WARNING: 
 WARNING: Conflicts:
-WARNING:
-WARNING: shift/reduce conflict for ID in state 63 resolved as shift
-WARNING: shift/reduce conflict for RW_ELSE in state 135 resolved as shift
+WARNING: 
+WARNING: shift/reduce conflict for ID in state 62 resolved as shift

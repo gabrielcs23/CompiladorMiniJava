@@ -4,6 +4,11 @@ import ply.yacc as yacc
 import Scanner.lex
 from Scanner.lex import tokens
 
+precedence = (
+    ('left', 'RPAREN'),
+    ('left', 'RW_ELSE')
+)
+
 def p_prog(p):
     """prog : main classe_r"""
     p[0] = ("prog", p[1], p[2])
@@ -76,7 +81,7 @@ def p_params(p):
 
 
 def p_tipo_r(p):
-    """tipo_r   : P_COMMA tipo ID tipo_r
+    """tipo_r   : tipo_r P_COMMA tipo ID
                 | empty"""
     if len(p) == 5:
         p[0] = ("tipo_r", p[1], p[2], p[3], p[4])
