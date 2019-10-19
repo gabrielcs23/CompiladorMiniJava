@@ -212,12 +212,12 @@ def p_exps(p):
 
 
 def p_exp_r(p):
-    """exp_r : exp P_COMMA exp
+    """exp_r : exp_r P_COMMA exp
              | empty"""
     if len(p) == 4:
-        p[0] = ("exp", p[1], p[2], p[3])
+        p[0] = ("exp_r", p[1], p[2], p[3])
     else :
-        p[0] = ("exp", p[1])
+        p[0] = ("exp_r", p[1])
 
 
 def p_empty(p):
