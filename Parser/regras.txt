@@ -7,7 +7,7 @@ VAR -> TIPO id P_SEMICOLON
 METODO -> public TIPO id lparen PARAMS_O rparen lcurly VAR_R CMD_R return EXP P_SEMICOLON rcurly
 METODO_R -> METODO_R METODO | Ɛ
 VAR_R -> VAR_R VAR | Ɛ
-CMD_R -> CMD_R CMD | Ɛ
+CMD_R -> CMD CMD_R | Ɛ
 PARAMS -> TIPO id TIPO_R
 TIPO_R -> TIPO_R P_COMMA TIPO ID | Ɛ
 PARAMS_O -> PARAMS | Ɛ

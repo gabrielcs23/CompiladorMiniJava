@@ -6,7 +6,7 @@ from Scanner.lex import tokens
 
 precedence = (
     ('left', 'RPAREN'),
-    ('left', 'RW_ELSE')
+    ('left', 'RW_ELSE'),
 )
 
 def p_prog(p):
@@ -67,7 +67,7 @@ def p_var_r(p):
 
 
 def p_cmd_r(p):
-    """cmd_r    : cmd_r cmd
+    """cmd_r    : cmd cmd_r
                 | empty"""
     if len(p) == 3:
         p[0] = ("cmd_r", p[1], p[2])
