@@ -4,6 +4,22 @@ import ply.yacc as yacc
 import Scanner.lex
 from Scanner.lex import tokens
 
+lines = 0
+blank_lines = 0
+with open('entrada.txt') as f:
+    for line in f:
+        if line.isspace():
+            blank_lines = blank_lines + 1
+        elif '\n' in line:
+            blank_lines = 1
+        else:
+            blank_lines = 0
+        lines = lines + 1
+
+if blank_lines == 0:
+    lines = lines - 1
+
+
 precedence = (
     ('left', 'RPAREN'),
     ('left', 'RW_ELSE'),
@@ -236,10 +252,12 @@ def p_empty(p):
 
 
 def p_error(p):
-    if not p:
-        print("Unexpected EOF")
-        return
-    print("Syntax error at line %d in token %s. Bad expression" % (p.lineno, p.type))
+    if p == None:
+        token = "end of file"
+    else:
+        token = f"{p.type}({p.value}) on line {p.lineno - lines}"
+
+    print(f"Syntax error: Unexpected {token}")
 
     # Read ahead looking for a closing '}'
     while True:
