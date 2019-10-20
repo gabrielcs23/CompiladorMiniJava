@@ -9,6 +9,7 @@ precedence = (
     ('left', 'RW_ELSE'),
 )
 
+
 def p_prog(p):
     """prog : main classe_r"""
     p[0] = ("prog", p[1], p[2])
@@ -19,7 +20,7 @@ def p_classe_r(p):
                 | empty"""
     if len(p) == 3:
         p[0] = ("classe_r", p[1], p[2])
-    else :
+    else:
         p[0] = ("classe_r", p[1])
 
 
@@ -27,17 +28,20 @@ def p_main(p):
     """main : RW_CLASS ID LCURLY RW_PUBLIC RW_STATIC RW_VOID RW_MAIN LPAREN RW_STRING LBRACK RBRACK ID RPAREN LCURLY cmd RCURLY RCURLY"""
     p[0] = ("main", p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17])
 
+
 def p_classe(p):
     """classe : RW_CLASS ID extends_o LCURLY var_r metodo_r RCURLY"""
     p[0] = ("classe", p[1], p[2], p[3], p[4], p[5], p[6], p[7])
+
 
 def p_extends_o(p):
     """extends_o    : RW_EXTENDS ID
                     | empty"""
     if len(p) == 3:
         p[0] = ("extends_o", p[1], p[2])
-    else :
+    else:
         p[0] = ("extends_o", p[1])
+
 
 def p_var(p):
     """var : tipo ID P_SEMICOLON"""
@@ -48,12 +52,13 @@ def p_metodo(p):
     """metodo : RW_PUBLIC tipo ID LPAREN params_o RPAREN LCURLY var_r cmd_r RW_RETURN exp P_SEMICOLON RCURLY"""
     p[0] = ("metodo", p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13])
 
+
 def p_metodo_r(p):
     """metodo_r : metodo_r metodo
                 | empty"""
     if len(p) == 3:
         p[0] = ("metodo_r", p[1], p[2])
-    else :
+    else:
         p[0] = ("metodo_r", p[1])
 
 
@@ -62,7 +67,7 @@ def p_var_r(p):
                 | empty """
     if len(p) == 3:
         p[0] = ("var_r", p[1], p[2])
-    else :
+    else:
         p[0] = ("var_r", p[1])
 
 
@@ -71,7 +76,7 @@ def p_cmd_r(p):
                 | empty"""
     if len(p) == 3:
         p[0] = ("cmd_r", p[1], p[2])
-    else :
+    else:
         p[0] = ("cmd_r", p[1])
 
 
@@ -85,7 +90,7 @@ def p_tipo_r(p):
                 | empty"""
     if len(p) == 5:
         p[0] = ("tipo_r", p[1], p[2], p[3], p[4])
-    else :
+    else:
         p[0] = ("tipo_r", p[1])
 
 
@@ -102,7 +107,7 @@ def p_tipo(p):
             | ID"""
     if len(p) == 4:
         p[0] = ("tipo", p[1], p[2], p[3])
-    else :
+    else:
         p[0] = ("tipo", p[1])
 
 
@@ -114,7 +119,7 @@ def p_cmd(p):
             | RW_SOUT LPAREN exp RPAREN P_SEMICOLON
             | ID OP_ATTR exp P_SEMICOLON
             | ID LBRACK exp RBRACK OP_ATTR exp P_SEMICOLON"""
-    print(p[1])
+    # print(p[1])
     if len(p) == 3:
         p[0] = ("cmd", p[1], p[2])
     elif len(p) == 6:
@@ -130,7 +135,7 @@ def p_exp(p):
             | rexp"""
     if len(p) == 4:
         p[0] = ("exp", p[1], p[2], p[3])
-    else :
+    else:
         p[0] = ("exp", p[1])
 
 
@@ -141,7 +146,7 @@ def p_rexp(p):
             | aexp """
     if len(p) == 4:
         p[0] = ("rexp", p[1], p[2], p[3])
-    else :
+    else:
         p[0] = ("rexp", p[1])
 
 
@@ -151,7 +156,7 @@ def p_aexp(p):
             | mexp"""
     if len(p) == 4:
         p[0] = ("aexp", p[1], p[2], p[3])
-    else :
+    else:
         p[0] = ("aexp", p[1])
 
 
@@ -161,7 +166,7 @@ def p_mexp(p):
             | sexp"""
     if len(p) == 4:
         p[0] = ("mexp", p[1], p[2], p[3])
-    else :
+    else:
         p[0] = ("mexp", p[1])
 
 
@@ -221,7 +226,7 @@ def p_exp_r(p):
              | empty"""
     if len(p) == 4:
         p[0] = ("exp_r", p[1], p[2], p[3])
-    else :
+    else:
         p[0] = ("exp_r", p[1])
 
 
@@ -231,9 +236,19 @@ def p_empty(p):
 
 
 def p_error(p):
-    print(p)
+    if not p:
+        print("Unexpected EOF")
+        return
+    print("Syntax error at line %d in token %s. Bad expression" % (p.lineno, p.type))
+
+    # Read ahead looking for a closing '}'
+    while True:
+        tok = parser.token()  # Get the next token
+        if not tok or tok.type == 'RCURLY':
+            break
+    parser.restart()
 
 
 parser = yacc.yacc(debug=True)
 s = Path("entrada.txt").read_text()
-print (parser.parse(s))
+print(parser.parse(s))
