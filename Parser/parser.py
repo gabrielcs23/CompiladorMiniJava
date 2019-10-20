@@ -252,21 +252,16 @@ def p_empty(p):
 
 
 def p_error(p):
-    if p == None:
-        token = "end of file"
-    else:
-        token = f"{p.type}({p.value}) on line {p.lineno - lines}"
-
-    print(f"Syntax error: Unexpected {token}")
-
-    # Read ahead looking for a closing '}'
-    while True:
-        tok = parser.token()  # Get the next token
-        if not tok or tok.type == 'RCURLY':
-            break
-    parser.restart()
+    if not p:
+        print("Unexpected EOF")
+        return
+    print("Syntax error at line %d in token %s. Bad expression" % (p.lineno - lines, p.type))
+    # Just discard the token and continue to parse
+    parser.errok()
 
 
 parser = yacc.yacc(debug=True)
 s = Path("entrada.txt").read_text()
-print(parser.parse(s))
+parserOut = parser.parse(s)
+if parserOut:
+    print(parserOut)
