@@ -199,8 +199,15 @@ def p_error(p):
         print("Unexpected EOF")
         return
     print("Syntax error at line %d in token %s. Bad expression" % (p.lineno - lines, p.type))
-    # Just discard the token and continue to parse
     parser.errok()
+    # Just discard the token and continue to parse
+    while True:
+        tok = parser.token()  # Get the next token
+        if not tok or tok.type == 'RCURLY':
+            while tok and tok.type == 'RCURLY':
+                tok = parser.token()
+            break
+    parser.restart()
 
 
 def get_rule(p: yacc.YaccProduction):
