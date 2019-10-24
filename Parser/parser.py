@@ -207,8 +207,6 @@ def p_error(p):
             while tok and tok.type == 'RCURLY':
                 tok = parser.token()
             break
-        elif tok.type == 'RPAREN' or tok.type == 'P_SEMICOLON' or tok.type == 'LCURLY' or tok.type == 'RW_RETURN' or tok.type == 'RW_PUBLIC' or tok.type == 'LBRACK' or tok.type == 'ID' or tok.type == 'RW_ELSE' or tok.type == 'RBRACK' or tok.type == 'OP_AND' or tok.type == 'P_COMMA' or tok.type == 'OP_LESSER' or tok.type == 'OP_EQUAL' or tok.type == 'OP_NOT_EQUAL' or tok.type == 'OP_PLUS' or tok.type == 'OP_MINUS' or tok.type == 'OP_MULTIPLY' or tok.type == 'OP_DIVISION' or tok.type == 'RW_INT' or tok.type == 'P_POINT' or tok.type == 'RW_IF' or tok.type == 'RW_WHILE' or tok.type == 'RW_SOUT':
-            break
     parser.restart()
 
 
