@@ -204,8 +204,6 @@ def p_error(p):
     while True:
         tok = parser.token()  # Get the next token
         if not tok or tok.type == 'RCURLY':
-            while tok and tok.type == 'RCURLY':
-                tok = parser.token()
             break
     parser.restart()
 
