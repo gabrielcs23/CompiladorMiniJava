@@ -16,13 +16,15 @@ class SymbolTable(object):
     __repr__ = __str__
 
     def insert(self, symbol, type):
-        print('Insert: ' + symbol + ' with type ' + type)
-        self._symbols[symbol] = type
+        print('Insert: ' + symbol + ' with type ' + type + '\n')
+        resposta = self.find(symbol)
+        if resposta is None: #só insere declaração se não tiver nenhuma
+            self._symbols[symbol] = type
+        else:
+            raise Exception(
+                'Símbolo ' + symbol + ' já declarado como ' + resposta
+            )
 
-if __name__ == '__main__':
-    symtab = SymbolTable()
-    int_type = 'int'
-
-    symtab.insert('x', int_type)
-    symtab.insert('y', int_type)
-    print(symtab)
+    def find(self, name):
+        symbol = self._symbols.get(name)
+        return symbol
