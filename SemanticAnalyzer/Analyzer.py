@@ -13,7 +13,7 @@ class Analyzer():
                 'Símbolo ' + var_name + ' não declarado'
             )
 
-    def visit_LeftCurly(self):
+    def visit_Public(self):
         self.qtdTabelas += 1
         self.symtab.append(SymbolTable())
 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     analyzer.symtab[analyzer.qtdTabelas-1].insert('a', boolean_type)
     analyzer.symtab[analyzer.qtdTabelas-1].insert('b', boolean_type)
 
-    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              #tabela 1
+    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              #tabela 1 com indice 0, que representa as variaveis declaradas em uma class
     print(analyzer.symtab[analyzer.qtdTabelas-1])
 
     ''' Erros
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     analyzer.visit_Var('z')                                                     #verifica se z já foi declarado
     '''
 
-    analyzer.visit_LeftCurly()                                                  #Achou um {, então cria uma nova lista pois é um novo escopo
+    analyzer.visit_Public()                                                     #Achou um public, então cria uma nova lista pois é um novo escopo de método
 
     analyzer.symtab[analyzer.qtdTabelas-1].insert('x', boolean_type)            #Erro acima não se repete aqui pois é criada uma nova lista
     analyzer.symtab[analyzer.qtdTabelas-1].insert('y', boolean_type)
