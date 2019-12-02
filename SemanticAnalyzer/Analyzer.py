@@ -1,4 +1,5 @@
 from SemanticAnalyzer.SymbolTable import SymbolTable
+from SemanticAnalyzer.Symbol import Symbol
 
 class Analyzer():
     def __init__(self):
@@ -27,25 +28,35 @@ if __name__ == '__main__':
     int_type = 'int'
     boolean_type = 'boolean'
 
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('x', int_type)                #sempre vai inserir na última tabela de símbolos da lista
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('y', int_type)
+    x = Symbol('x', int_type)
+    y = Symbol('y', int_type)
+    a = Symbol('a', boolean_type)
+    b = Symbol('b', boolean_type)
 
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('a', boolean_type)
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('b', boolean_type)
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(x.name, x.type)                #sempre vai inserir na última tabela de símbolos da lista
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(y.name, y.type)
+
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(a.name, a.type)
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(b.name, b.type)
 
     print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              #tabela 1 com indice 0, que representa as variaveis declaradas em uma class
     print(analyzer.symtab[analyzer.qtdTabelas-1])
 
     ''' Erros
-    analyzer.symtab[analyzer.qtdTabelas - 1].insert('x', boolean_type)          #Tenta declarar um x já declarado
+    x = Symbol('x', boolean_type)
+    analyzer.symtab[analyzer.qtdTabelas - 1].insert(x.name, x.type)             #Tenta declarar um x já declarado
     analyzer.visit_Var('z')                                                     #verifica se z já foi declarado
     '''
 
     analyzer.visit_Public()                                                     #Achou um public, então cria uma nova lista pois é um novo escopo de método
 
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('x', boolean_type)            #Erro acima não se repete aqui pois é criada uma nova lista
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('y', boolean_type)
-    analyzer.symtab[analyzer.qtdTabelas-1].insert('z', int_type)
+    x = Symbol('x', boolean_type)
+    y = Symbol('y', boolean_type)
+    z = Symbol('z', int_type)
+
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(x.name, x.type)               #Erro acima não se repete aqui pois é criada uma nova lista
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(y.name, y.type)
+    analyzer.symtab[analyzer.qtdTabelas-1].insert(z.name, z.type)
 
     print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              #tabela 2
     print(analyzer.symtab[analyzer.qtdTabelas - 1])
