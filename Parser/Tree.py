@@ -1,6 +1,9 @@
 class Tree:
     def __init__(self, rule):
         self.rule = rule
+        simbolos = rule.split()
+        self.producao = simbolos[0]
+        self.simbolos = simbolos[2:]
         self.children = []
 
     def __str__(self, level=0):
