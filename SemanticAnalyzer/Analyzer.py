@@ -1,14 +1,15 @@
 from SemanticAnalyzer.SymbolTable import SymbolTable
 from SemanticAnalyzer.Symbol import Symbol
 
-class Analyzer():
+
+class Analyzer(object):
     def __init__(self):
         self.qtdTabelas = 1
         self.symtab = []
         self.symtab.append(SymbolTable())
 
     def visit_Var(self, var_name):
-        var_symbol = self.symtab[analyzer.qtdTabelas-1].find(var_name)
+        var_symbol = self.find(var_name)
         if var_symbol is None:
             raise Exception(
                 'Símbolo ' + var_name + ' não declarado'
@@ -21,6 +22,14 @@ class Analyzer():
     def visit_RightCurly(self):
         self.symtab.pop()
         self.qtdTabelas -= 1
+
+    def find(self, name):
+        for nivelTabela in reversed(self.symtab):
+            varDecl = nivelTabela.find(name)
+            if varDecl is not None:
+                return varDecl
+        return None
+
 
 if __name__ == '__main__':
 
@@ -58,12 +67,12 @@ if __name__ == '__main__':
     analyzer.symtab[analyzer.qtdTabelas-1].insert(y.name, y.type)
     analyzer.symtab[analyzer.qtdTabelas-1].insert(z.name, z.type)
 
-    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              #tabela 2
+    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              # tabela 2
     print(analyzer.symtab[analyzer.qtdTabelas - 1])
 
-    analyzer.visit_Var('z')                                                     #verifica que z já foi declarado
+    analyzer.visit_Var('z')                                                     # verifica que z já foi declarado
 
-    analyzer.visit_RightCurly()                                                 #remove o último elemento da lista de tabelas hash
+    analyzer.visit_RightCurly()                                                 # remove o último elemento da lista de tabelas hash
 
     print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              # tabela 1
     print(analyzer.symtab[analyzer.qtdTabelas - 1])

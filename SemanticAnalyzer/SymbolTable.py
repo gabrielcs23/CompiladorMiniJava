@@ -18,7 +18,7 @@ class SymbolTable(object):
     def insert(self, symbol, type):
         print('Insert: ' + symbol + ' with type ' + type + '\n')
         resposta = self.find(symbol)
-        if resposta is None: #só insere declaração se não tiver nenhuma
+        if resposta is None:  # só insere declaração se não tiver nenhuma
             self._symbols[symbol] = type
         else:
             raise Exception(
