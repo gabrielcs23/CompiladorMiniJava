@@ -244,3 +244,4 @@ if parserOut:
 
     analyzer = Analyzer()
     analyzer.iterate(tree)
+    analyzer.visit_RightCurly()

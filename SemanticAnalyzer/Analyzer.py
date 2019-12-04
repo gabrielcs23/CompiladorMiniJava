@@ -31,6 +31,13 @@ class Analyzer(object):
         return None
 
     def iterate(self, tree):
+        escopo = 0
+        if tree.producao == "classe":
+            tipo = "class"
+            nome = tree.children[1].rule
+            self.symtab[self.qtdTabelas-1].insert(nome, tipo)
+            self.visit_Public()
+            escopo += 1
         if tree.producao == "cmd" or tree.producao == "pexp":
             if tree.simbolos[0] == "ID":
                 variavel = tree.children[0].rule
@@ -46,10 +53,13 @@ class Analyzer(object):
 
         # verificação de produção, se for main, insere main
         if tree.producao == "main":
-            self.symtab[self.qtdTabelas-1].insert("main", "static void")
-            print('Tabela de símbolos ' + str(self.qtdTabelas) + '\n')
-            print(self.symtab[self.qtdTabelas - 1])
+            tipo = "class"
+            nome = tree.children[1].rule
+            self.symtab[self.qtdTabelas-1].insert(nome, tipo)
             self.visit_Public()
+            self.symtab[self.qtdTabelas-1].insert("main", "static void")
+            self.visit_Public()
+            escopo += 2
 
         # verificação de produção, se for metodo, verifica a definição do metodo
         if tree.producao == "metodo":
@@ -59,11 +69,13 @@ class Analyzer(object):
                 tipo += i.rule
             nome = tree.children[2].rule
             self.symtab[self.qtdTabelas-1].insert(nome, tipo)
-            print('Tabela de símbolos ' + str(self.qtdTabelas) + '\n')
-            print(self.symtab[self.qtdTabelas - 1])
             self.visit_Public()
+            escopo += 1
 
         #recursão
         if len(tree.children) != 0:
             for i in tree.children:
                 self.iterate(i)
+                if i.rule == "}" and escopo > 0:
+                    escopo -= 1
+                    self.visit_RightCurly()
