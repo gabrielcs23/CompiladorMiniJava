@@ -31,7 +31,10 @@ class Analyzer(object):
         return None
 
     def iterate(self, tree):
-
+        if tree.producao == "cmd" or tree.producao == "pexp":
+            if tree.simbolos[0] == "ID":
+                variavel = tree.children[0].rule
+                self.visit_Var(variavel)
         # verificação de produção, se for var ou params é definição de variavel
         if tree.producao == "var" or tree.producao == "params":
             tipo = ""
