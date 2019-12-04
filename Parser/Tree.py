@@ -1,6 +1,7 @@
 class Tree:
     def __init__(self, rule):
         self.rule = rule
+        self.parent = None
         if (isinstance(rule, str)) and (rule.find('->') != -1):
             simbolos = rule.split()
             self.producao = simbolos[0]

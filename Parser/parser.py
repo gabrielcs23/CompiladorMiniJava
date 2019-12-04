@@ -2,6 +2,7 @@ from pathlib import Path
 
 import ply.yacc as yacc
 from ply.lex import LexToken
+from SemanticAnalyzer.Analyzer import Analyzer
 
 import Scanner.lex
 from Parser.Tree import Tree
@@ -225,6 +226,7 @@ def get_tree(parser_out):
             for i in parser_out[1]:
                 child = get_tree(i)
                 if child is not None:
+                    child.parent = root
                     root.children.append(child)
     elif parser_out is not None:
         root = Tree(parser_out)
@@ -239,3 +241,6 @@ parserOut = parser.parse(s)
 if parserOut:
     tree = get_tree(parserOut)
     print(tree)
+
+    analyzer = Analyzer()
+    analyzer.iterate(tree)

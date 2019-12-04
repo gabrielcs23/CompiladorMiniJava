@@ -30,49 +30,37 @@ class Analyzer(object):
                 return varDecl
         return None
 
+    def iterate(self, tree):
 
-if __name__ == '__main__':
+        # verificação de produção, se for var ou params é definição de variavel
+        if tree.producao == "var" or tree.producao == "params":
+            tipo = ""
+            nome = ""
+            for i in tree.children[0].children:
+                tipo += i.rule
+            nome = tree.children[1].rule
+            self.symtab[self.qtdTabelas-1].insert(nome, tipo)
 
-    analyzer = Analyzer()
-    int_type = 'int'
-    boolean_type = 'boolean'
+        # verificação de produção, se for main, insere main
+        if tree.producao == "main":
+            self.symtab[self.qtdTabelas-1].insert("main", "static void")
+            print('Tabela de símbolos ' + str(self.qtdTabelas) + '\n')
+            print(self.symtab[self.qtdTabelas - 1])
+            self.visit_Public()
 
-    x = Symbol('x', int_type)
-    y = Symbol('y', int_type)
-    a = Symbol('a', boolean_type)
-    b = Symbol('b', boolean_type)
+        # verificação de produção, se for metodo, verifica a definição do metodo
+        if tree.producao == "metodo":
+            tipo = ""
+            nome = ""
+            for i in tree.children[1].children:
+                tipo += i.rule
+            nome = tree.children[2].rule
+            self.symtab[self.qtdTabelas-1].insert(nome, tipo)
+            print('Tabela de símbolos ' + str(self.qtdTabelas) + '\n')
+            print(self.symtab[self.qtdTabelas - 1])
+            self.visit_Public()
 
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(x.name, x.type)                #sempre vai inserir na última tabela de símbolos da lista
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(y.name, y.type)
-
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(a.name, a.type)
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(b.name, b.type)
-
-    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              #tabela 1 com indice 0, que representa as variaveis declaradas em uma class
-    print(analyzer.symtab[analyzer.qtdTabelas-1])
-
-    ''' Erros
-    x = Symbol('x', boolean_type)
-    analyzer.symtab[analyzer.qtdTabelas - 1].insert(x.name, x.type)             #Tenta declarar um x já declarado
-    analyzer.visit_Var('z')                                                     #verifica se z já foi declarado
-    '''
-
-    analyzer.visit_Public()                                                     #Achou um public, então cria uma nova lista pois é um novo escopo de método
-
-    x = Symbol('x', boolean_type)
-    y = Symbol('y', boolean_type)
-    z = Symbol('z', int_type)
-
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(x.name, x.type)               #Erro acima não se repete aqui pois é criada uma nova lista
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(y.name, y.type)
-    analyzer.symtab[analyzer.qtdTabelas-1].insert(z.name, z.type)
-
-    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              # tabela 2
-    print(analyzer.symtab[analyzer.qtdTabelas - 1])
-
-    analyzer.visit_Var('z')                                                     # verifica que z já foi declarado
-
-    analyzer.visit_RightCurly()                                                 # remove o último elemento da lista de tabelas hash
-
-    print('Tabela de símbolos ' + str(analyzer.qtdTabelas) + '\n')              # tabela 1
-    print(analyzer.symtab[analyzer.qtdTabelas - 1])
+        #recursão
+        if len(tree.children) != 0:
+            for i in tree.children:
+                self.iterate(i)
