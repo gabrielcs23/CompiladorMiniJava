@@ -76,8 +76,6 @@ class Analyzer(object):
 
     def secondPass(self, tree):
         escopo = 0
-        if tree.producao == "exp":
-            print(self.evaluate(tree))
         if tree.producao == "classe":
             tipo = "class"
             nome = tree.children[1].rule
@@ -213,3 +211,21 @@ class Analyzer(object):
                     return None
             else:
                 return None
+
+    def thirdPass(self, tree):
+        if tree.producao == "exp":
+            value = self.evaluate(tree)
+            if value is not None:
+                # se value for true ou false, substitui por 1 ou 0 para facilitar na geração de código
+                if type(value) == bool:
+                    if value:
+                        value = 1
+                    else:
+                        value = 0
+                tree.rule = value
+                tree.children = []
+
+        # recursão
+        if len(tree.children) != 0:
+            for i in tree.children:
+                self.thirdPass(i)
