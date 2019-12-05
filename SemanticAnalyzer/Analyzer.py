@@ -76,6 +76,8 @@ class Analyzer(object):
 
     def secondPass(self, tree):
         escopo = 0
+        if tree.producao == "exp":
+            print(self.evaluate(tree))
         if tree.producao == "classe":
             tipo = "class"
             nome = tree.children[1].rule
@@ -129,7 +131,85 @@ class Analyzer(object):
         # recursão
         if len(tree.children) != 0:
             for i in tree.children:
-                self.iterate(i)
+                self.secondPass(i)
                 if i.rule == "}" and escopo > 0:
                     escopo -= 1
                     self.visit_RightCurly()
+
+    # método para retornar o valor resultante de uma série de operações de somas, multiplicações, subtrações e divisões
+    def evaluate(self, tree):
+        # se chegar em sexp, verifica se a produção gera um numero ou um numero negativo
+        if tree.producao == "sexp":
+            if tree.simbolos[0] == "NUMBER":
+                return tree.children[0].rule
+            elif tree.simbolos[0] == "OP_MINUS":
+                child_eval = self.evaluate(tree.children[1])
+                if child_eval is not None:
+                    return child_eval*-1
+                else:
+                    return None
+            else:
+                return None
+        # ao chegar em mexp, verifica o resultado da divisao ou multiplicação
+        if tree.producao == "mexp":
+            if len(tree.children) == 1:
+                return self.evaluate(tree.children[0])
+            op1 = self.evaluate(tree.children[0])
+            op2 = self.evaluate(tree.children[2])
+            if op1 is not None and op2 is not None:
+                if tree.simbolos[1] == "OP_MULTIPLY":
+                    return op1 * op2
+                elif tree.simbolos[1] == "OP_DIVISION":
+                    if op2 != 0:
+                        return op1 / op2
+                    else:
+                        return None
+                else:
+                    return None
+            else:
+                return None
+        # ao chegar em aexp, verifica o resultado da soma ou subtração
+        if tree.producao == "aexp":
+            if len(tree.children) == 1:
+                return self.evaluate(tree.children[0])
+            op1 = self.evaluate(tree.children[0])
+            op2 = self.evaluate(tree.children[2])
+            if op1 is not None and op2 is not None:
+                if tree.simbolos[1] == "OP_PLUS":
+                    return op1 + op2
+                elif tree.simbolos[1] == "OP_MINUS":
+                    return op1 - op2
+                else:
+                    return None
+            else:
+                return None
+        # ao chegar em rexp, verifica o resultado das operações de comparação
+        if tree.producao == "rexp":
+            if len(tree.children) == 1:
+                return self.evaluate(tree.children[0])
+            op1 = self.evaluate(tree.children[0])
+            op2 = self.evaluate(tree.children[2])
+            if op1 is not None and op2 is not None:
+                if tree.simbolos[1] == "OP_LESSER":
+                    return op1 < op2
+                elif tree.simbolos[1] == "OP_EQUAL":
+                    return op1 == op2
+                elif tree.simbolos[1] == "OP_NOT_EQUAL":
+                    return op1 != op2
+                else:
+                    return None
+            else:
+                return None
+        # ao chegar em exp, verifica o resultado da operação and
+        if tree.producao == "exp":
+            if len(tree.children) == 1:
+                return self.evaluate(tree.children[0])
+            op1 = self.evaluate(tree.children[0])
+            op2 = self.evaluate(tree.children[2])
+            if op1 is not None and op2 is not None:
+                if tree.simbolos[1] == "OP_AND":
+                    return op1 and op2
+                else:
+                    return None
+            else:
+                return None
