@@ -1,6 +1,10 @@
 from SemanticAnalyzer.SymbolTable import SymbolTable
 from SemanticAnalyzer.Symbol import Symbol
 
+qtd_true_branch = 0
+qtd_false_branch = 0
+qtd_endif_branch = 0
+qtdWhile = 0
 
 class Analyzer(object):
     def __init__(self):
@@ -224,8 +228,97 @@ class Analyzer(object):
                         value = 0
                 tree.rule = value
                 tree.children = []
+                tree.producao = "num"
 
         # recursão
         if len(tree.children) != 0:
             for i in tree.children:
                 self.thirdPass(i)
+
+    def cgen(self, tree):
+        global qtd_endif_branch
+        global qtd_true_branch
+        global qtd_false_branch
+        global qtdWhile
+        if tree.producao == "num":
+            print("li $a0 " + str(tree.rule))
+        elif tree.producao == "sexp":
+            if len(tree.children) == 1:
+                self.cgen(tree.children[0])
+            elif len(tree.children) == 2:
+                if tree.simbolos[0] == "OP_MINUS":
+                    self.cgen(tree.children[1])
+                    print("subu $a0 $zero $a0")
+                elif tree.simbolos[0] == "OP_NOT":
+                    self.cgen(tree.children[1])
+                    print("xori $a0 $a0 1")
+        elif tree.producao == "aexp" or tree.producao == "mexp" or tree.producao == "rexp" or tree.producao == "exp":
+            if len(tree.children) == 1:
+                self.cgen(tree.children[0])
+            elif len(tree.children) == 3:
+                self.cgen(tree.children[0])
+                print("sw $a0 0($sp)")
+                print("addiu $sp $sp -4")
+                self.cgen(tree.children[2])
+                print("lw $t1 4($sp)")
+                if tree.simbolos[1] == "OP_PLUS":
+                    print("add $a0 $t1 $a0")
+                elif tree.simbolos[1] == "OP_MINUS":
+                    print("sub $a0 $t1 $a0")
+                elif tree.simbolos[1] == "OP_MULTIPLY":
+                    print("mult $t1 $a0")
+                    print("mflo $a0")
+                elif tree.simbolos[1] == "OP_DIVISION":
+                    print("div $t1 $a0")
+                    print("mflo $a0")
+                elif tree.simbolos[1] == "OP_LESSER":
+                    print("slt $a0 $t1 $a0")
+                elif tree.simbolos[1] == "OP_EQUAL":
+                    print("subu $t2, $a0, $t1")
+                    print("sltu $t2, $zero, $t2")
+                    print("xori $a0, $t2, 1")
+                elif tree.simbolos[1] == "OP_NOT_EQUAL":
+                    print("subu $t2, $a0, $t1")
+                    print("sltu $t2, $zero, $t2")
+                elif tree.simbolos[1] == "OP_AND":
+                    print("and $a0 $a0 $t1")
+                print("addiu $sp $sp 4")
+        elif tree.producao == "cmd":
+            if tree.simbolos[0] == "RW_IF":
+                if len(tree.children) == 7:
+                    self.cgen(tree.children[2])
+                    print("addiu $t1 $zero 1")
+                    print("beq $a0 $t1 true_branch" + str(qtd_true_branch))
+                    print("false_branch" + str(qtd_false_branch) + ":")
+                    self.cgen(tree.children[4])
+                    print("j end_if" + str(qtd_endif_branch))
+                    print("true_branch" + str(qtd_true_branch) + ":")
+                    self.cgen(tree.children[6])
+                    print("end_if" + str(qtd_endif_branch) + ":")
+                    qtd_false_branch += 1
+                    qtd_true_branch += 1
+                    qtd_endif_branch += 1
+                elif len(tree.children) == 5:
+                    self.cgen(tree.children[2])
+                    print("addiu $t1 $zero 1")
+                    print("beq $a0 $t1 true_branch" + str(qtd_true_branch))
+                    print("j end_if" + str(qtd_endif_branch))
+                    print("true_branch" + str(qtd_true_branch) + ":")
+                    self.cgen(tree.children[4])
+                    print("end_if" + str(qtd_endif_branch) + ":")
+                    qtd_true_branch += 1
+                    qtd_endif_branch += 1
+            elif tree.simbolos[0] == "RW_SOUT":
+                self.cgen(tree.children[2])
+                print("li $v0 1")
+                print("syscall")
+            elif tree.simbolos[0] == "RW_WHILE":
+                print("while%s:" % qtdWhile)
+                self.cgen(tree.children[2])
+                print("beq $a0 $zero endWhile%s" % qtdWhile)
+                self.cgen(tree.children[4])
+                print("j while%s" % qtdWhile)
+                qtdWhile += 1
+        else:
+            for i in tree.children:
+                self.cgen(i)

@@ -240,10 +240,10 @@ s = Path("entrada.txt").read_text()
 parserOut = parser.parse(s)
 if parserOut:
     tree = get_tree(parserOut)
-
     analyzer = Analyzer()
     analyzer.firstPass(tree)
     analyzer.secondPass(tree)
     analyzer.thirdPass(tree)
     print(tree)
+    analyzer.cgen(tree)
     analyzer.visit_RightCurly()
