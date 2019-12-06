@@ -328,6 +328,34 @@ class Analyzer(object):
         elif tree.producao == "params_o":
             if tree.simbolos[0] == "params":
                 self.cgen(tree.children[0])
+        elif tree.producao == "metodo":
+            # public TIPO id lparen PARAMS_O rparen lcurly VAR_R CMD_R return EXP P_SEMICOLON rcurly
+            # PARAMS_O -> PARAMS | Ɛ
+            # PARAMS -> TIPO id TIPO_R
+            # TIPO_R -> TIPO_R P_COMMA TIPO ID | Ɛ
+            # o que fazer com VAR_R?
+            nome_func = tree.children[2]
+            z = 0
+
+            i = tree.children[4]
+            if i.simbolos[0] != "empty":
+                i = i.children[0].children[2]
+                z += 1
+                while i.simbolos[0] != "empty":
+                    i = i.children[0]
+                    z += 1
+
+            print(nome_func.rule + "_entry:")
+            print("move $fp $sp")
+            print("sw $ra 0($sp)")
+            print("addiu $sp $sp -4")
+            self.cgen(tree.children[8])
+            self.cgen(tree.children[10])
+            print("lw $ra 4($sp)")
+            print("addiu $sp $sp " + str(4*z + 8))
+            print("lw $fp 0($sp)")
+            print("jr $ra")
+
         else:
             for i in tree.children:
                 self.cgen(i)

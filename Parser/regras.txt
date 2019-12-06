@@ -4,7 +4,7 @@ MAIN -> class id lcurly public static void main lparen String lbrack rbrack id r
 CLASSE -> class id EXTENDS_O lcurly VAR_R METODO_R rcurly
 EXTENDS_O -> extends id | Ɛ
 VAR -> TIPO id P_SEMICOLON
-METODO -> public TIPO id lparen PARAMS_O rparen lcurly VAR_R CMD_R return EXP P_SEMICOLON rcurly -- definição
+METODO -> public TIPO id lparen PARAMS_O rparen lcurly VAR_R CMD_R return EXP P_SEMICOLON rcurly ✓
 METODO_R -> METODO_R METODO | Ɛ ✓
 VAR_R -> VAR_R VAR | Ɛ ✓
 CMD_R -> CMD CMD_R | Ɛ ✓
