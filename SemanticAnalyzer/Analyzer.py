@@ -319,8 +319,15 @@ class Analyzer(object):
                 self.cgen(tree.children[4])
                 print("j while%s" % qtdWhile)
                 qtdWhile += 1
-            elif tree.simbolos[1] == "CMD_R":
+            elif tree.simbolos[1] == "cmd_r":
                 self.cgen(tree.children[1])
+        elif tree.producao == "cmd_r" or tree.producao == "var_r" or tree.producao == "metodo_r" or tree.producao == "classe_r":
+            if len(tree.children) > 0:
+                self.cgen(tree.children[0])
+                self.cgen(tree.children[1])
+        elif tree.producao == "params_o":
+            if tree.simbolos[0] == "params":
+                self.cgen(tree.children[0])
         else:
             for i in tree.children:
                 self.cgen(i)
