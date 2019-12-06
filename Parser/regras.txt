@@ -15,10 +15,10 @@ TIPO ->   int lbrack rbrack
         | boolean
         | int
         | id
-CMD ->    lcurly CMD_R rcurly
+CMD ->    lcurly CMD_R rcurly ✓
         | if lparen EXP rparen CMD ✓
         | if lparen EXP rparen CMD else CMD ✓
-        | while lparen EXP rparen CMD
+        | while lparen EXP rparen CMD ✓
         | System.out.println lparen EXP rparen P_SEMICOLON ✓
         | id OP_ATTR EXP P_SEMICOLON
         | id lbrack EXP rbrack OP_ATTR EXP P_SEMICOLON
