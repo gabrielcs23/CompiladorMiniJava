@@ -319,6 +319,8 @@ class Analyzer(object):
                 self.cgen(tree.children[4])
                 print("j while%s" % qtdWhile)
                 qtdWhile += 1
+            elif tree.simbolos[1] == "CMD_R":
+                self.cgen(tree.children[1])
         else:
             for i in tree.children:
                 self.cgen(i)
