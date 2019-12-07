@@ -192,8 +192,7 @@ class Analyzer(object):
                 op1 = self.evaluate(tree.children[0])
                 op2 = self.evaluate(tree.children[2])
                 if op1 is not None and op2 is not None:
-                    if tree.simbolos[
-                        1] == "OP_LESSER" and op1 != 'true' and op1 != 'false' and op2 != 'true' and op2 != 'false':
+                    if tree.simbolos[1] == "OP_LESSER" and op1 != 'true' and op1 != 'false' and op2 != 'true' and op2 != 'false':
                         return op1 < op2
                     elif tree.simbolos[1] == "OP_EQUAL":
                         return op1 == op2
