@@ -4,7 +4,9 @@ from SemanticAnalyzer.Symbol import Symbol
 qtd_true_branch = 0
 qtd_false_branch = 0
 qtd_endif_branch = 0
-qtdWhile = 0
+qtd_while = 0
+this_ref = "main"
+class_call_ref = ""
 
 class Analyzer(object):
     def __init__(self):
@@ -126,7 +128,7 @@ class Analyzer(object):
         #         | new id lparen rparen
         if tree.producao == "pexp":
             # entrar em cada PEXP recursivo e concatenar referencias e.g:
-            # checkPEXP([]) { if(PEXP) then checkPEXP(lista) else lista.insert(0,id)}
+            # checkPEXP([]) { if(PEXP) then checkPEXP(lista) else lista.insert(0,ID)}
             pass
 
 
@@ -240,7 +242,9 @@ class Analyzer(object):
         global qtd_endif_branch
         global qtd_true_branch
         global qtd_false_branch
-        global qtdWhile
+        global qtd_while
+        global this_ref
+        global class_call_ref
         if tree.producao == "num":
             print("li $a0 " + str(tree.rule))
         elif tree.producao == "sexp":
@@ -314,12 +318,12 @@ class Analyzer(object):
                 print("li $v0 1")
                 print("syscall")
             elif tree.simbolos[0] == "RW_WHILE":
-                print("while%s:" % qtdWhile)
+                print("while%s:" % qtd_while)
                 self.cgen(tree.children[2])
-                print("beq $a0 $zero endWhile%s" % qtdWhile)
+                print("beq $a0 $zero endWhile%s" % qtd_while)
                 self.cgen(tree.children[4])
-                print("j while%s" % qtdWhile)
-                qtdWhile += 1
+                print("j while%s" % qtd_while)
+                qtd_while += 1
             elif tree.simbolos[1] == "cmd_r":
                 self.cgen(tree.children[1])
         elif tree.producao == "cmd_r" or tree.producao == "var_r" or tree.producao == "metodo_r" or tree.producao == "classe_r":
@@ -329,13 +333,50 @@ class Analyzer(object):
         elif tree.producao == "params_o":
             if tree.simbolos[0] == "params":
                 self.cgen(tree.children[0])
+        elif tree.producao == "pexp":
+            if tree.simbolos[0] == "ID":
+                class_call_ref = tree.children[0].rule
+                print("troquei em ID", class_call_ref)
+            elif tree.simbolos[0] == "RW_THIS":
+                class_call_ref = this_ref
+                print("troquei em this", class_call_ref)
+            elif tree.simbolos[0] == "RW_NEW":
+                class_call_ref = tree.children[1].rule
+                print("troquei em new", class_call_ref)
+            elif tree.simbolos[0] == "LPAREN":
+                self.cgen(tree.children[1])
+            elif tree.simbolos[0] == "pexp":
+                if len(tree.children) == 6:
+                    self.cgen(tree.children[0])
+                    nome_func = tree.children[2].rule
+                    print("sw $fp 0($sp)")
+                    print("addiu $sp $sp -4")
+                    i = tree.children[4]
+                    if i.simbolos[0] != "empty":
+                        i = i.children[0]
+                        self.cgen(i)
+                        print("sw $a0 0($sp)")
+                        print("addiu $sp $sp -4")
+                        i = i.children[1]
+                        while i.simbolos[0] != "empty":
+                            self.cgen(i.children[2])
+                            print("sw $a0 0($sp)")
+                            print("addiu $sp $sp -4")
+                            i = i.children[0]
+                    print("sw $a0 0($sp)")
+                    print("addiu $sp $sp -4")
+                    print("jal %s.%s_entry" % (class_call_ref, nome_func))
+                    class_call_ref = ""
+                    print("após limpar = ", class_call_ref)
+                elif len(tree.children) == 3:
+                    # vai ser similar ao caso com 6 acima em alguns pontos
+                    print()
         elif tree.producao == "metodo":
             # public TIPO id lparen PARAMS_O rparen lcurly VAR_R CMD_R return EXP P_SEMICOLON rcurly
             # PARAMS_O -> PARAMS | Ɛ
             # PARAMS -> TIPO id TIPO_R
             # TIPO_R -> TIPO_R P_COMMA TIPO ID | Ɛ
             # o que fazer com VAR_R?
-            nome_func = tree.children[2]
             z = 0
 
             i = tree.children[4]
@@ -346,7 +387,7 @@ class Analyzer(object):
                     i = i.children[0]
                     z += 1
 
-            print(nome_func.rule + "_entry:")
+            print(self.getNomeMetodo(tree))
             print("move $fp $sp")
             print("sw $ra 0($sp)")
             print("addiu $sp $sp -4")
@@ -360,3 +401,7 @@ class Analyzer(object):
         else:
             for i in tree.children:
                 self.cgen(i)
+
+    def getNomeMetodo(self, node):
+        nomeClasse = node.parent.parent.children[1].rule
+        return "%s.%s_entry:" % (nomeClasse, node.children[2].rule)
