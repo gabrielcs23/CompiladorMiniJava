@@ -283,7 +283,7 @@ class Analyzer(object):
             for i in tree.children:
                 self.thirdPass(i)
 
-    def cgen(self, tree):
+    def cgen(self, tree, file):
         global qtd_endif_branch
         global qtd_true_branch
         global qtd_false_branch
@@ -291,128 +291,124 @@ class Analyzer(object):
         global this_ref
         global class_call_ref
         if tree.producao == "num":
-            print("li $a0 " + str(tree.rule))
+            file.write("li $a0 " + str(tree.rule) + "\n")
         elif tree.producao == "sexp":
             if len(tree.children) == 1:
-                self.cgen(tree.children[0])
+                self.cgen(tree.children[0], file)
             elif len(tree.children) == 2:
                 if tree.simbolos[0] == "OP_MINUS":
-                    self.cgen(tree.children[1])
-                    print("subu $a0 $zero $a0")
+                    self.cgen(tree.children[1], file)
+                    file.write("subu $a0 $zero $a0\n")
                 elif tree.simbolos[0] == "OP_NOT":
-                    self.cgen(tree.children[1])
-                    print("xori $a0 $a0 1")
+                    self.cgen(tree.children[1], file)
+                    file.write("xori $a0 $a0 1\n")
         elif tree.producao == "aexp" or tree.producao == "mexp" or tree.producao == "rexp" or tree.producao == "exp":
             if len(tree.children) == 1:
-                self.cgen(tree.children[0])
+                self.cgen(tree.children[0], file)
             elif len(tree.children) == 3:
-                self.cgen(tree.children[0])
-                print("sw $a0 0($sp)")
-                print("addiu $sp $sp -4")
-                self.cgen(tree.children[2])
-                print("lw $t1 4($sp)")
+                self.cgen(tree.children[0], file)
+                file.write("sw $a0 0($sp)\n")
+                file.write("addiu $sp $sp -4\n")
+                self.cgen(tree.children[2], file)
+                file.write("lw $t1 4($sp)\n")
                 if tree.simbolos[1] == "OP_PLUS":
-                    print("add $a0 $t1 $a0")
+                    file.write("add $a0 $t1 $a0\n")
                 elif tree.simbolos[1] == "OP_MINUS":
-                    print("sub $a0 $t1 $a0")
+                    file.write("sub $a0 $t1 $a0\n")
                 elif tree.simbolos[1] == "OP_MULTIPLY":
-                    print("mult $t1 $a0")
-                    print("mflo $a0")
+                    file.write("mult $t1 $a0\n")
+                    file.write("mflo $a0\n")
                 elif tree.simbolos[1] == "OP_DIVISION":
-                    print("div $t1 $a0")
-                    print("mflo $a0")
+                    file.write("div $t1 $a0\n")
+                    file.write("mflo $a0\n")
                 elif tree.simbolos[1] == "OP_LESSER":
-                    print("slt $a0 $t1 $a0")
+                    file.write("slt $a0 $t1 $a0\n")
                 elif tree.simbolos[1] == "OP_EQUAL":
-                    print("subu $t2, $a0, $t1")
-                    print("sltu $t2, $zero, $t2")
-                    print("xori $a0, $t2, 1")
+                    file.write("subu $t2, $a0, $t1\n")
+                    file.write("sltu $t2, $zero, $t2\n")
+                    file.write("xori $a0, $t2, 1\n")
                 elif tree.simbolos[1] == "OP_NOT_EQUAL":
-                    print("subu $t2, $a0, $t1")
-                    print("sltu $t2, $zero, $t2")
+                    file.write("subu $t2, $a0, $t1\n")
+                    file.write("sltu $t2, $zero, $t2\n")
                 elif tree.simbolos[1] == "OP_AND":
-                    print("and $a0 $a0 $t1")
-                print("addiu $sp $sp 4")
+                    file.write("and $a0 $a0 $t1\n")
+                file.write("addiu $sp $sp 4\n")
         elif tree.producao == "cmd":
             if tree.simbolos[0] == "RW_IF":
                 if len(tree.children) == 7:
-                    self.cgen(tree.children[2])
-                    print("addiu $t1 $zero 1")
-                    print("beq $a0 $t1 true_branch" + str(qtd_true_branch))
-                    print("false_branch" + str(qtd_false_branch) + ":")
-                    self.cgen(tree.children[4])
-                    print("j end_if" + str(qtd_endif_branch))
-                    print("true_branch" + str(qtd_true_branch) + ":")
-                    self.cgen(tree.children[6])
-                    print("end_if" + str(qtd_endif_branch) + ":")
+                    self.cgen(tree.children[2], file)
+                    file.write("addiu $t1 $zero 1\n")
+                    file.write("beq $a0 $t1 true_branch" + str(qtd_true_branch) + "\n")
+                    file.write("false_branch" + str(qtd_false_branch) + ":\n")
+                    self.cgen(tree.children[4], file)
+                    file.write("j end_if" + str(qtd_endif_branch) + "\n")
+                    file.write("true_branch" + str(qtd_true_branch) + ":\n")
+                    self.cgen(tree.children[6], file)
+                    file.write("end_if" + str(qtd_endif_branch) + ":\n")
                     qtd_false_branch += 1
                     qtd_true_branch += 1
                     qtd_endif_branch += 1
                 elif len(tree.children) == 5:
-                    self.cgen(tree.children[2])
-                    print("addiu $t1 $zero 1")
-                    print("beq $a0 $t1 true_branch" + str(qtd_true_branch))
-                    print("j end_if" + str(qtd_endif_branch))
-                    print("true_branch" + str(qtd_true_branch) + ":")
-                    self.cgen(tree.children[4])
-                    print("end_if" + str(qtd_endif_branch) + ":")
+                    self.cgen(tree.children[2], file)
+                    file.write("addiu $t1 $zero 1\n")
+                    file.write("beq $a0 $t1 true_branch" + str(qtd_true_branch) + "\n")
+                    file.write("j end_if" + str(qtd_endif_branch) + "\n")
+                    file.write("true_branch" + str(qtd_true_branch) + ":\n")
+                    self.cgen(tree.children[4], file)
+                    file.write("end_if" + str(qtd_endif_branch) + ":\n")
                     qtd_true_branch += 1
                     qtd_endif_branch += 1
             elif tree.simbolos[0] == "RW_SOUT":
-                self.cgen(tree.children[2])
-                print("li $v0 1")
-                print("syscall")
+                self.cgen(tree.children[2], file)
+                file.write("li $v0 1\n")
+                file.write("syscall\n")
             elif tree.simbolos[0] == "RW_WHILE":
-                print("while%s:" % qtd_while)
-                self.cgen(tree.children[2])
-                print("beq $a0 $zero endWhile%s" % qtd_while)
-                self.cgen(tree.children[4])
-                print("j while%s" % qtd_while)
+                file.write("while%s:\n" % qtd_while)
+                self.cgen(tree.children[2], file)
+                file.write("beq $a0 $zero endWhile%s\n" % qtd_while)
+                self.cgen(tree.children[4], file)
+                file.write("j while%s\n" % qtd_while)
                 qtd_while += 1
             elif tree.simbolos[1] == "cmd_r":
-                self.cgen(tree.children[1])
+                self.cgen(tree.children[1], file)
         elif tree.producao == "cmd_r" or tree.producao == "var_r" or tree.producao == "metodo_r" or tree.producao == "classe_r":
             if len(tree.children) > 0:
-                self.cgen(tree.children[0])
-                self.cgen(tree.children[1])
+                self.cgen(tree.children[0], file)
+                self.cgen(tree.children[1], file)
         elif tree.producao == "params_o":
             if tree.simbolos[0] == "params":
-                self.cgen(tree.children[0])
+                self.cgen(tree.children[0], file)
         elif tree.producao == "pexp":
             if tree.simbolos[0] == "ID":
                 class_call_ref = tree.children[0].rule
-                print("troquei em ID", class_call_ref)
             elif tree.simbolos[0] == "RW_THIS":
                 class_call_ref = this_ref
-                print("troquei em this", class_call_ref)
             elif tree.simbolos[0] == "RW_NEW":
                 class_call_ref = tree.children[1].rule
-                print("troquei em new", class_call_ref)
             elif tree.simbolos[0] == "LPAREN":
-                self.cgen(tree.children[1])
+                self.cgen(tree.children[1], file)
             elif tree.simbolos[0] == "pexp":
                 if len(tree.children) == 6:
-                    self.cgen(tree.children[0])
+                    self.cgen(tree.children[0], file)
                     nome_func = tree.children[2].rule
-                    print("sw $fp 0($sp)")
-                    print("addiu $sp $sp -4")
+                    file.write("sw $fp 0($sp)\n")
+                    file.write("addiu $sp $sp -4\n")
                     i = tree.children[4]
                     if i.simbolos[0] != "empty":
                         i = i.children[0]
-                        self.cgen(i)
-                        print("sw $a0 0($sp)")
-                        print("addiu $sp $sp -4")
+                        self.cgen(i, file)
+                        file.write("sw $a0 0($sp)\n")
+                        file.write("addiu $sp $sp -4\n")
                         i = i.children[1]
                         while i.simbolos[0] != "empty":
-                            self.cgen(i.children[2])
-                            print("sw $a0 0($sp)")
-                            print("addiu $sp $sp -4")
+                            self.cgen(i.children[2], file)
+                            file.write("sw $a0 0($sp)\n")
+                            file.write("addiu $sp $sp -4\n")
                             i = i.children[0]
-                    print("sw $a0 0($sp)")
-                    print("addiu $sp $sp -4")
-                    print("jal %s.%s_entry" % (class_call_ref, nome_func))
+                    file.write("sw $a0 0($sp)\n")
+                    file.write("addiu $sp $sp -4\n")
+                    file.write("jal %s.%s_entry\n" % (class_call_ref, nome_func))
                     class_call_ref = ""
-                    print("após limpar = ", class_call_ref)
                 # elif len(tree.children) == 3:
                 #     # vai ser similar ao caso com 6 acima em alguns pontos
         elif tree.producao == "metodo":
@@ -430,21 +426,21 @@ class Analyzer(object):
                 while i.simbolos[0] != "empty":
                     i = i.children[0]
                     z += 1
-            print(self.getNomeMetodo(tree))
-            print("move $fp $sp")
-            print("sw $ra 0($sp)")
-            print("addiu $sp $sp -4")
-            self.cgen(tree.children[8])
-            self.cgen(tree.children[10])
-            print("lw $ra 4($sp)")
-            print("addiu $sp $sp " + str(4 * z + 8))
-            print("lw $fp 0($sp)")
-            print("jr $ra")
+            file.write(self.getNomeMetodo(tree))
+            file.write("move $fp $sp\n")
+            file.write("sw $ra 0($sp)\n")
+            file.write("addiu $sp $sp -4\n")
+            self.cgen(tree.children[8], file)
+            self.cgen(tree.children[10], file)
+            file.write("lw $ra 4($sp)\n")
+            file.write("addiu $sp $sp " + str(4 * z + 8) + "\n")
+            file.write("lw $fp 0($sp)\n")
+            file.write("jr $ra\n")
 
         else:
             for i in tree.children:
-                self.cgen(i)
+                self.cgen(i, file)
 
     def getNomeMetodo(self, node):
         nomeClasse = node.parent.parent.children[1].rule
-        return "%s.%s_entry:" % (nomeClasse, node.children[2].rule)
+        return "%s.%s_entry:\n" % (nomeClasse, node.children[2].rule)

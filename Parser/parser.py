@@ -245,5 +245,9 @@ if parserOut:
     analyzer.secondPass(tree)
     analyzer.thirdPass(tree)
     print(tree)
-    analyzer.cgen(tree)
+    with open("saida.s", "w") as file:
+        try:
+            analyzer.cgen(tree, file)
+        except OSError:
+            raise Exception("Não foi possível gerar arquivo de saída")
     analyzer.visit_RightCurly()
